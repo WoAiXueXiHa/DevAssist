@@ -1,0 +1,85 @@
+{
+  "budget_cny": 1.0,
+  "reserved_upper_cny": 0.0372599,
+  "calls": [
+    {
+      "model": "qwen-turbo",
+      "network_attempt_allowance": 1,
+      "input_upper_tokens": 6317,
+      "output_limit": 1024,
+      "reserved_upper_cny": 0.0025095,
+      "status": "ok",
+      "usage": {
+        "prompt_tokens": 597,
+        "completion_tokens": 15,
+        "total_tokens": 612
+      },
+      "estimated_cny": 0.0001881
+    },
+    {
+      "model": "text-embedding-v3",
+      "network_attempt_allowance": 1,
+      "input_upper_tokens": 4184,
+      "output_limit": 0,
+      "reserved_upper_cny": 0.002092,
+      "status": "ok",
+      "usage": {
+        "prompt_tokens": 19,
+        "completion_tokens": 0,
+        "total_tokens": 19
+      },
+      "estimated_cny": 9.5e-06
+    },
+    {
+      "model": "text-embedding-v3",
+      "network_attempt_allowance": 1,
+      "input_upper_tokens": 4184,
+      "output_limit": 0,
+      "reserved_upper_cny": 0.002092,
+      "status": "ok",
+      "usage": {
+        "prompt_tokens": 19,
+        "completion_tokens": 0,
+        "total_tokens": 19
+      },
+      "estimated_cny": 9.5e-06
+    },
+    {
+      "model": "gte-rerank-v2",
+      "network_attempt_allowance": 2,
+      "input_upper_tokens": 14612,
+      "output_limit": 0,
+      "reserved_upper_cny": 0.0233792,
+      "status": "HTTP 200",
+      "usage": {
+        "prompt_tokens": 2663,
+        "completion_tokens": 0,
+        "total_tokens": 2663
+      },
+      "estimated_cny": 0.0021304
+    },
+    {
+      "model": "qwen-plus",
+      "network_attempt_allowance": 1,
+      "input_upper_tokens": 6424,
+      "output_limit": 1024,
+      "reserved_upper_cny": 0.0071872,
+      "status": "ok",
+      "usage": {
+        "prompt_tokens": 599,
+        "completion_tokens": 311,
+        "total_tokens": 910
+      },
+      "estimated_cny": 0.0011012
+    }
+  ],
+  "pricing_source": "https://help.aliyun.com/zh/model-studio/model-pricing",
+  "scope": "China Beijing; non-thinking; input < 128K; one sample; no corpus ingest",
+  "limits": {
+    "max_network_attempts": 8,
+    "max_output_tokens": 1024,
+    "openai_sdk_retries": 0,
+    "rerank_max_attempts_per_call": 2
+  },
+  "account_bill_verified": false
+}

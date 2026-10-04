@@ -1,0 +1,104 @@
+{
+  "sample_count": 1,
+  "query": "签名算法怎么生成？请说明参与签名的参数和服务端验签步骤。",
+  "database": "isolated",
+  "redis": "isolated ephemeral",
+  "milvus": "existing collection read only",
+  "corpus_reingested": false,
+  "knowledge_chunks": 32,
+  "http_status": 200,
+  "result": {
+    "answer": "**结论**：签名算法为：将业务参数、api_key、timestamp 三个部分按参数名（key）字典序升序排序后拼接成字符串，再追加 Secret Key，最后对该完整字符串做 HMAC-SHA256 哈希运算，结果转为十六进制小写字符串；服务端验签步骤是使用相同算法和客户 Secret Key 对收到的请求参数重新计算签名，并与请求头中 X-Sign 字段比对是否一致。\n\n**建议步骤**：\n1. 1. 客户端收集所有业务参数（JSON Body 中的字段）、X-Api-Key 值（即 api_key）、X-Timestamp 值（秒级时间戳）\n2. 2. 将上述所有键值对（包括 api_key 和 timestamp）按 key 字典序升序排序\n3. 3. 按 'key1=value1&key2=value2&...' 格式拼接成字符串（URL 编码不参与，仅原始值拼接）\n4. 4. 在该字符串末尾追加 Secret Key（无分隔符）\n5. 5. 对拼接后的完整字符串执行 HMAC-SHA256 计算，输出为十六进制小写字符串，作为 X-Sign 值\n6. 6. 服务端验签时，使用相同排序规则、相同 Secret Key、相同拼接方式和哈希算法重新计算签名，并与请求头 X-Sign 比对",
+    "card": {
+      "conclusion": "签名算法为：将业务参数、api_key、timestamp 三个部分按参数名（key）字典序升序排序后拼接成字符串，再追加 Secret Key，最后对该完整字符串做 HMAC-SHA256 哈希运算，结果转为十六进制小写字符串；服务端验签步骤是使用相同算法和客户 Secret Key 对收到的请求参数重新计算签名，并与请求头中 X-Sign 字段比对是否一致。",
+      "evidence": [],
+      "steps": [
+        "1. 客户端收集所有业务参数（JSON Body 中的字段）、X-Api-Key 值（即 api_key）、X-Timestamp 值（秒级时间戳）",
+        "2. 将上述所有键值对（包括 api_key 和 timestamp）按 key 字典序升序排序",
+        "3. 按 'key1=value1&key2=value2&...' 格式拼接成字符串（URL 编码不参与，仅原始值拼接）",
+        "4. 在该字符串末尾追加 Secret Key（无分隔符）",
+        "5. 对拼接后的完整字符串执行 HMAC-SHA256 计算，输出为十六进制小写字符串，作为 X-Sign 值",
+        "6. 服务端验签时，使用相同排序规则、相同 Secret Key、相同拼接方式和哈希算法重新计算签名，并与请求头 X-Sign 比对"
+      ]
+    },
+    "citations": [
+      {
+        "doc_title": "常见问题 FAQ",
+        "index": 1,
+        "score": 0.323,
+        "section": "如何生成请求签名？",
+        "version": "v1"
+      },
+      {
+        "doc_title": "API 接入指南",
+        "index": 2,
+        "score": 0.179,
+        "section": "第四步：调用接口",
+        "version": "v1"
+      },
+      {
+        "doc_title": "Webhook 回调",
+        "index": 3,
+        "score": 0.16,
+        "section": "回调验签（WEBHOOK_SIGN_INVALID）",
+        "version": "v1"
+      },
+      {
+        "doc_title": "常见问题 FAQ",
+        "index": 4,
+        "score": 0.152,
+        "section": "接口返回 401 怎么办？",
+        "version": "v1"
+      },
+      {
+        "doc_title": "API 接入指南",
+        "index": 5,
+        "score": 0.145,
+        "section": "第三步：获取 API Key",
+        "version": "v1"
+      }
+    ],
+    "from_cache": false,
+    "need_clarify": false,
+    "need_human": false,
+    "ticket_id": null,
+    "trace_id": "trace_ba40e77beea141cb"
+  },
+  "messages_persisted": [
+    "user",
+    "assistant"
+  ],
+  "answer_matches_mysql": true,
+  "traces": 4,
+  "tickets_created": 0,
+  "provider_calls": 5,
+  "estimated_cny": 0.0034387000000000003,
+  "reserved_upper_cny": 0.0372599,
+  "unknown_usage_calls": 0,
+  "account_bill_verified": false,
+  "passed": true,
+  "passed_scope": "HTTP/SSE, answer persistence, citations present, no escalation, provider usage recorded; not semantic-quality certification",
+  "manual_review": {
+    "status": "needs_followup",
+    "supported": [
+      "业务参数、api_key、timestamp 按参数名排序拼接，追加 Secret 后做 HMAC-SHA256",
+      "接入指南给出 X-Api-Key、秒级 X-Timestamp、X-Sign 和 JSON Body"
+    ],
+    "unsupported_details": [
+      "key=value&... 拼接格式",
+      "URL 编码不参与",
+      "Secret 追加无分隔符",
+      "十六进制小写输出"
+    ],
+    "inference": [
+      "服务端同算法重算后比较 X-Sign 属合理通用推断，当前引用未给完整平台验签规范"
+    ],
+    "presentation": [
+      "步骤重复编号 1. 1. 等"
+    ],
+    "citation_limits": [
+      "FAQ 支持概要；Webhook 引用对应回调验签，不直接证明请求签名细节；存在引用不证明每个断言有依据"
+    ],
+    "followup": "保留原 AI 算法；后续补齐权威鉴权与签名文档并单独验收内容质量"
+  }
+}

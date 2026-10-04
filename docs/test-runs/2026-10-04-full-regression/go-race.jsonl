@@ -1,0 +1,53 @@
+{"Time":"2026-10-04T08:55:26.714593388Z","Action":"start","Package":"devsupport/backend-go/cmd/server"}
+{"Time":"2026-10-04T08:55:26.714655572Z","Action":"output","Package":"devsupport/backend-go/cmd/server","Output":"?   \tdevsupport/backend-go/cmd/server\t[no test files]\n"}
+{"Time":"2026-10-04T08:55:26.714676708Z","Action":"skip","Package":"devsupport/backend-go/cmd/server","Elapsed":0}
+{"Time":"2026-10-04T08:55:27.010704935Z","Action":"start","Package":"devsupport/backend-go/internal/aiclient"}
+{"Time":"2026-10-04T08:55:27.020414892Z","Action":"run","Package":"devsupport/backend-go/internal/aiclient","Test":"TestInternalHTTPContract"}
+{"Time":"2026-10-04T08:55:27.020463965Z","Action":"output","Package":"devsupport/backend-go/internal/aiclient","Test":"TestInternalHTTPContract","Output":"=== RUN   TestInternalHTTPContract\n"}
+{"Time":"2026-10-04T08:55:27.128870637Z","Action":"output","Package":"devsupport/backend-go/internal/aiclient","Test":"TestInternalHTTPContract","Output":"--- PASS: TestInternalHTTPContract (0.11s)\n"}
+{"Time":"2026-10-04T08:55:27.128920618Z","Action":"pass","Package":"devsupport/backend-go/internal/aiclient","Test":"TestInternalHTTPContract","Elapsed":0.11}
+{"Time":"2026-10-04T08:55:27.128928738Z","Action":"output","Package":"devsupport/backend-go/internal/aiclient","Output":"PASS\n"}
+{"Time":"2026-10-04T08:55:27.230783353Z","Action":"start","Package":"devsupport/backend-go/internal/api"}
+{"Time":"2026-10-04T08:55:27.230855101Z","Action":"start","Package":"devsupport/backend-go/internal/auth"}
+{"Time":"2026-10-04T08:55:27.230908866Z","Action":"start","Package":"devsupport/backend-go/internal/config"}
+{"Time":"2026-10-04T08:55:27.230937881Z","Action":"output","Package":"devsupport/backend-go/internal/config","Output":"?   \tdevsupport/backend-go/internal/config\t[no test files]\n"}
+{"Time":"2026-10-04T08:55:27.2309459Z","Action":"skip","Package":"devsupport/backend-go/internal/config","Elapsed":0}
+{"Time":"2026-10-04T08:55:27.230952985Z","Action":"start","Package":"devsupport/backend-go/internal/model"}
+{"Time":"2026-10-04T08:55:27.231008531Z","Action":"start","Package":"devsupport/backend-go/internal/service"}
+{"Time":"2026-10-04T08:55:27.231042444Z","Action":"output","Package":"devsupport/backend-go/internal/service","Output":"?   \tdevsupport/backend-go/internal/service\t[no test files]\n"}
+{"Time":"2026-10-04T08:55:27.231048558Z","Action":"skip","Package":"devsupport/backend-go/internal/service","Elapsed":0}
+{"Time":"2026-10-04T08:55:27.24003452Z","Action":"run","Package":"devsupport/backend-go/internal/auth","Test":"TestPasswordAndTokenCompatibility"}
+{"Time":"2026-10-04T08:55:27.240076915Z","Action":"output","Package":"devsupport/backend-go/internal/auth","Test":"TestPasswordAndTokenCompatibility","Output":"=== RUN   TestPasswordAndTokenCompatibility\n"}
+{"Time":"2026-10-04T08:55:27.240111226Z","Action":"run","Package":"devsupport/backend-go/internal/model","Test":"TestJSONAndPythonTime"}
+{"Time":"2026-10-04T08:55:27.240114171Z","Action":"output","Package":"devsupport/backend-go/internal/model","Test":"TestJSONAndPythonTime","Output":"=== RUN   TestJSONAndPythonTime\n"}
+{"Time":"2026-10-04T08:55:27.240343669Z","Action":"output","Package":"devsupport/backend-go/internal/model","Test":"TestJSONAndPythonTime","Output":"--- PASS: TestJSONAndPythonTime (0.00s)\n"}
+{"Time":"2026-10-04T08:55:27.240363014Z","Action":"pass","Package":"devsupport/backend-go/internal/model","Test":"TestJSONAndPythonTime","Elapsed":0}
+{"Time":"2026-10-04T08:55:27.240413655Z","Action":"output","Package":"devsupport/backend-go/internal/model","Output":"PASS\n"}
+{"Time":"2026-10-04T08:55:27.264920383Z","Action":"run","Package":"devsupport/backend-go/internal/api","Test":"TestPydanticStringContract"}
+{"Time":"2026-10-04T08:55:27.264952782Z","Action":"output","Package":"devsupport/backend-go/internal/api","Test":"TestPydanticStringContract","Output":"=== RUN   TestPydanticStringContract\n"}
+{"Time":"2026-10-04T08:55:27.265999613Z","Action":"output","Package":"devsupport/backend-go/internal/api","Test":"TestPydanticStringContract","Output":"--- PASS: TestPydanticStringContract (0.00s)\n"}
+{"Time":"2026-10-04T08:55:27.266034678Z","Action":"pass","Package":"devsupport/backend-go/internal/api","Test":"TestPydanticStringContract","Elapsed":0}
+{"Time":"2026-10-04T08:55:27.266042099Z","Action":"run","Package":"devsupport/backend-go/internal/api","Test":"TestSSEUnicodeMultiline"}
+{"Time":"2026-10-04T08:55:27.266044399Z","Action":"output","Package":"devsupport/backend-go/internal/api","Test":"TestSSEUnicodeMultiline","Output":"=== RUN   TestSSEUnicodeMultiline\n"}
+{"Time":"2026-10-04T08:55:27.296066924Z","Action":"output","Package":"devsupport/backend-go/internal/auth","Test":"TestPasswordAndTokenCompatibility","Output":"--- PASS: TestPasswordAndTokenCompatibility (0.06s)\n"}
+{"Time":"2026-10-04T08:55:27.29609834Z","Action":"pass","Package":"devsupport/backend-go/internal/auth","Test":"TestPasswordAndTokenCompatibility","Elapsed":0.06}
+{"Time":"2026-10-04T08:55:27.29610571Z","Action":"output","Package":"devsupport/backend-go/internal/auth","Output":"PASS\n"}
+{"Time":"2026-10-04T08:55:27.307270363Z","Action":"output","Package":"devsupport/backend-go/internal/api","Test":"TestSSEUnicodeMultiline","Output":"--- PASS: TestSSEUnicodeMultiline (0.04s)\n"}
+{"Time":"2026-10-04T08:55:27.307288481Z","Action":"pass","Package":"devsupport/backend-go/internal/api","Test":"TestSSEUnicodeMultiline","Elapsed":0.04}
+{"Time":"2026-10-04T08:55:27.30729245Z","Action":"run","Package":"devsupport/backend-go/internal/api","Test":"TestInternalAuthRejectsEmptyOrWrongToken"}
+{"Time":"2026-10-04T08:55:27.307294253Z","Action":"output","Package":"devsupport/backend-go/internal/api","Test":"TestInternalAuthRejectsEmptyOrWrongToken","Output":"=== RUN   TestInternalAuthRejectsEmptyOrWrongToken\n"}
+{"Time":"2026-10-04T08:55:27.307912018Z","Action":"output","Package":"devsupport/backend-go/internal/api","Test":"TestInternalAuthRejectsEmptyOrWrongToken","Output":"--- PASS: TestInternalAuthRejectsEmptyOrWrongToken (0.00s)\n"}
+{"Time":"2026-10-04T08:55:27.307927559Z","Action":"pass","Package":"devsupport/backend-go/internal/api","Test":"TestInternalAuthRejectsEmptyOrWrongToken","Elapsed":0}
+{"Time":"2026-10-04T08:55:27.307931017Z","Action":"run","Package":"devsupport/backend-go/internal/api","Test":"TestEmbeddedBodyAndBearerErrors"}
+{"Time":"2026-10-04T08:55:27.307933869Z","Action":"output","Package":"devsupport/backend-go/internal/api","Test":"TestEmbeddedBodyAndBearerErrors","Output":"=== RUN   TestEmbeddedBodyAndBearerErrors\n"}
+{"Time":"2026-10-04T08:55:27.309076697Z","Action":"output","Package":"devsupport/backend-go/internal/api","Test":"TestEmbeddedBodyAndBearerErrors","Output":"--- PASS: TestEmbeddedBodyAndBearerErrors (0.00s)\n"}
+{"Time":"2026-10-04T08:55:27.309100204Z","Action":"pass","Package":"devsupport/backend-go/internal/api","Test":"TestEmbeddedBodyAndBearerErrors","Elapsed":0}
+{"Time":"2026-10-04T08:55:27.309103559Z","Action":"output","Package":"devsupport/backend-go/internal/api","Output":"PASS\n"}
+{"Time":"2026-10-04T08:55:28.131850937Z","Action":"output","Package":"devsupport/backend-go/internal/aiclient","Output":"ok  \tdevsupport/backend-go/internal/aiclient\t1.121s\n"}
+{"Time":"2026-10-04T08:55:28.131907917Z","Action":"pass","Package":"devsupport/backend-go/internal/aiclient","Elapsed":1.121}
+{"Time":"2026-10-04T08:55:28.241620726Z","Action":"output","Package":"devsupport/backend-go/internal/model","Output":"ok  \tdevsupport/backend-go/internal/model\t1.011s\n"}
+{"Time":"2026-10-04T08:55:28.241655435Z","Action":"pass","Package":"devsupport/backend-go/internal/model","Elapsed":1.011}
+{"Time":"2026-10-04T08:55:28.298312154Z","Action":"output","Package":"devsupport/backend-go/internal/auth","Output":"ok  \tdevsupport/backend-go/internal/auth\t1.067s\n"}
+{"Time":"2026-10-04T08:55:28.298377694Z","Action":"pass","Package":"devsupport/backend-go/internal/auth","Elapsed":1.068}
+{"Time":"2026-10-04T08:55:28.313322345Z","Action":"output","Package":"devsupport/backend-go/internal/api","Output":"ok  \tdevsupport/backend-go/internal/api\t1.082s\n"}
+{"Time":"2026-10-04T08:55:28.313359881Z","Action":"pass","Package":"devsupport/backend-go/internal/api","Elapsed":1.083}
