@@ -1,0 +1,19 @@
+# 私有配置、依赖与运行产物不进入公开源码。
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+*.pyc
+node_modules/
+dist/
+*.tsbuildinfo
+backend-go/server
+backend-go/bin/
+*.log
+.DS_Store
+*:Zone.Identifier
+DevSupport-AI/
