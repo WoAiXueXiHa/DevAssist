@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     # ----- Go/Python 内部接线（共享凭证与私网地址）-----
     internal_service_token: str = ""
     go_tools_url: str = "http://127.0.0.1:8080"
-    business_tools_backend: str = "go"  # 只有回退旧入口时显式使用 legacy_sql
+    business_tools_backend: str = "go"  # 业务工具仅通过 Go 执行
 
     # ----- 其它 -----
     app_env: str = "dev"

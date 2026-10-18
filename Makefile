@@ -1,4 +1,4 @@
-.PHONY: infra-up infra-down infra-status init-db seed ingest setup run run-ai run-legacy front health clean check check-go check-python check-front
+.PHONY: infra-up infra-down infra-status init-db seed ingest setup run run-ai front health clean check check-go check-python check-front
 
 # 直接使用项目虚拟环境，避免误用已删除的内层路径或系统 Python。
 PYTHON ?= $(CURDIR)/ai-py/.venv/bin/python
@@ -31,9 +31,6 @@ run:             ## 启动 Go 业务后端 :8080（另一终端先起 run-ai）
 
 run-ai:          ## 启动 Python 内部 AI :8000，单 worker，不注册外部业务路由
 	cd ai-py && $(PYTHON) -m uvicorn app.ai_main:app --host 127.0.0.1 --port 8000 --workers 1
-
-run-legacy:      ## 明确回退：先停新版两个进程，再将 Vite 代理改回 :8000
-	cd ai-py && BUSINESS_TOOLS_BACKEND=legacy_sql $(PYTHON) -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 front:           ## 启动前端 :5173
 	cd frontend && npm run dev

@@ -176,7 +176,7 @@ docker-compose.yml MySQL、Redis、Milvus 及依赖
 Makefile           启动、检查和数据准备命令
 ```
 
-`.env`、`.venv`、`node_modules` 和构建缓存不纳入版本管理。Python 旧业务入口 `app.main` 与 `legacy_sql` 保留用于接口对照和明确回退，常规启动使用 Go + `app.ai_main`；两套业务入口不能同时接收写请求。
+`.env`、`.venv`、`node_modules` 和构建缓存不纳入版本管理。仅保留 Go + `app.ai_main` 启动方式：Go 提供对外业务 API，Python 只提供内部 AI 能力。
 
 ## 验证与维护
 

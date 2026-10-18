@@ -19,7 +19,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy.orm import Session
 
-from scripts.check_migration import port
+import socket
+
+
+def port():
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        return sock.getsockname()[1]
 
 ROOT=Path(__file__).resolve().parents[2]
 

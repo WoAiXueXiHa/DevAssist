@@ -28,13 +28,8 @@ async def close_client() -> None:
 
 
 async def execute_business(name: str, args: dict, ctx) -> dict:
-    if settings.business_tools_backend == "legacy_sql":
-        # 仅用于明确回退：停 Go/ai_main，启动旧 app.main；正常模式绝不自动回退。
-        from app.tools import legacy_sql
-
-        return await getattr(legacy_sql, name)(args, ctx)
     if settings.business_tools_backend != "go":
-        raise RuntimeError("BUSINESS_TOOLS_BACKEND 只能为 go 或 legacy_sql")
+        raise RuntimeError("业务工具仅支持 Go 后端")
     if len(settings.internal_service_token) < 32:
         raise RuntimeError("内部服务凭证未配置")
     # 模型传来的同名参数不具有身份效力，可信上下文单独传输。
