@@ -59,15 +59,15 @@ flowchart LR
 
 ### 一次聊天请求如何执行
 
-Go 校验 JWT 后根据用户 ID 重新查询用户，确定角色、租户与会话权限，先保存用户消息，再调用 Python 内部 AI 接口。AI 读取记忆、识别意图，并按路由执行专业 Agent：诊断与账单任务可以并行；它们内部也可以检索文档，纯文档问题单独走文档 Agent。
+前端为每次发送生成 `client_request_id`。Go 校验 JWT 后根据用户 ID 重新查询用户，确定角色、租户与会话权限，在短事务中认领请求并保存用户消息，再调用 Python 内部 AI 接口。AI 读取记忆、识别意图，并按路由执行专业 Agent：诊断与账单任务可以并行；它们内部也可以检索文档，纯文档问题单独走文档 Agent。
 
-业务工具通过内部 HTTP 回调 Go，由 Go 查询或写入 MySQL。Python 汇总结果并返回完整答案，Go 用短事务保存助手消息和会话状态，再发送 SSE 字符块。AI 等待期间不占用覆盖整个请求的业务数据库事务。
+业务工具通过内部 HTTP 回调 Go，由 Go 查询或写入 MySQL。Python 汇总结果并返回完整答案，Go 用短事务保存助手消息、会话状态及完整 SSE 响应，再发送 SSE 字符块。同一用户使用相同请求标识和原始参数重试时，已完成请求直接重放保存的结果，不再次调用 AI。AI 等待期间不占用覆盖整个请求的业务数据库事务。
 
 两个内部方向都验证 `INTERNAL_SERVICE_TOKEN`。工具上下文中的用户、租户和内部角色来自可信请求，模型参数不能覆盖这些身份字段。普通生成链路经过安全审查；澄清与缓存命中有单独分支，因此不能把流程描述为所有请求都执行全部节点。
 
 ### 文档检索
 
-Markdown 文档切片后，通过 Embedding 写入 Milvus。在线查询结合向量检索与 BM25，使用 RRF 合并候选，再经过 Rerank 和上下文压缩生成带引用的答案；错误码支持标量过滤。文档更新后需要重新入库，并重启 AI 服务以刷新进程内 BM25 缓存。
+Markdown 文档切片后，通过 Embedding 写入 Milvus。在线查询结合向量检索与 BM25，使用 RRF 合并候选，再经过 Rerank 和上下文压缩生成带引用的答案；错误码支持标量过滤。文档更新后需要重新入库，重启 AI 服务以刷新进程内 BM25 缓存，并清理对应的语义答案缓存；目前没有知识库版本自动失效机制。
 
 ## 最简单启动方式
 
@@ -99,7 +99,7 @@ Makefile 默认使用 `ai-py/.venv/bin/python`，无需先激活虚拟环境。�
 
 ```bash
 python3 -m venv ai-py/.venv
-ai-py/.venv/bin/python -m pip install -e './backend[dev]'
+ai-py/.venv/bin/python -m pip install -e './ai-py[dev]'
 test -f ai-py/.env || cp ai-py/.env.example ai-py/.env
 npm --prefix frontend ci
 ```
@@ -137,6 +137,17 @@ make setup    # 删表重建、写入种子数据、知识向量入库
 
 `make setup` 包含破坏性重建；知识入库会调用付费 Embedding。数据准备完成后，使用上面的三个启动命令。Compose 仅管理基础设施，Go、Python 和前端仍需分别启动。
 
+### 已有环境升级
+
+先停止接收新请求，备份数据库，在项目根目录执行增量迁移，然后协调更新 Go、Python 和前端：
+
+```bash
+(cd ai-py && .venv/bin/python -m scripts.migrate_ticket_idempotency)
+(cd ai-py && .venv/bin/python -m scripts.migrate_chat_requests)
+```
+
+两项迁移均可重复执行，保留已有数据；升级不要运行 `make setup` 或 `make init-db`。`POST /api/chat` 现在要求 `client_request_id`，旧客户端需同步更新。部署步骤、兼容性和验收记录见[可靠性修复说明](docs/RELIABILITY_FIXES.md)。
+
 ### 演示账号与端口
 
 种子账号密码统一为 `password123`，仅用于本地演示：
@@ -159,7 +170,9 @@ make setup    # 删表重建、写入种子数据、知识向量入库
 - **高风险操作**：退款、套餐变更和 Key 重置在工具层拒绝自动执行，转人工处理；系统不会直接完成资金或账户变更。
 - **知识与回答**：引用和检索结果提供核查线索，不保证模型的每个细节都正确。当前文档还缺少完整的独立鉴权签名、错误码和限流手册；真实样本也发现过无依据细节，需补充资料并单独评审。
 - **输出方式**：当前 SSE 是完整答案保存后分块发送，并非模型实时 Token 流。
-- **一致性与重试**：Go 的短事务保护对应业务写入，没有 Go/Python 跨服务原子事务、工具建单幂等或失败自动补偿。AI 失败时，已提交的用户消息可能保留；客户端重试也可能重复触发工具副作用。
+- **一致性与重试**：聊天按用户与 `client_request_id` 去重，完成结果持久化后可重放；同键不同参数返回 409，处理中返回 409，失败返回 502，不自动重新执行。建单使用可信请求标识生成幂等键，主动转人工反馈按会话去重。仍没有 Go/Python 跨服务原子事务或后台自动补偿；进程崩溃可能留下 pending 请求，目前没有自动过期接管和记录清理策略。
+- **浏览器恢复**：未确认请求保存在按租户及用户隔离的 sessionStorage，网络中断或刷新后可用原参数重试；收到 SSE `done` 才自动清除。关闭标签页、清理浏览器数据或换设备无法恢复原标识，重新发送会视为新请求。
+- **人工受理与降级**：仅 `handoff_status=accepted` 且存在工单 ID 才表示已受理；`need_human` 只表示需要人工。无检索命中或降级的回答不写入语义缓存；工具日志、成本及 Trace 等辅助记录失败不会直接丢弃已生成答案，但目前没有持久重试队列。
 - **人工处理依赖**：人工回复和会话补充也调用 Python 脱敏接口；AI 服务不可达时，这些写入会失败，不能绕过脱敏保存明文。
 - **租户权限**：客户数据受租户限制；同租户会话和内部支持角色有各自访问规则，不能宣称所有会话仅创建者可见。
 - **运行规模**：当前证据覆盖本地工程链路，未完成服务器部署、长期容量或生产 SLA 验收。默认账户、密码和基础设施端口面向开发环境。
@@ -167,9 +180,9 @@ make setup    # 删表重建、写入种子数据、知识向量入库
 ## 项目结构
 
 ```text
-backend-go/         Go 业务服务、权限与事务
-ai-py/            Python AI、数据准备、评估及回归测试
-frontend/           React 页面和前端测试
+backend-go/        Go 业务服务、权限与事务
+ai-py/             Python AI、数据准备、评估及回归测试
+frontend/          React 页面和前端测试
 data/knowledge/    本地 Markdown 知识文档
 docs/              服务拆分说明、源码阅读与验收记录
 docker-compose.yml MySQL、Redis、Milvus 及依赖
@@ -187,6 +200,8 @@ make bench    # 压测与阶段耗时检查，可能产生多次付费模型调�
 ```
 
 2026-10-04 目录整理后的验证：Go 7 项测试及 race、Python 5 项、前端 4 项 SSE 测试与构建通过；隔离 MySQL 的 127 项检查通过，包含浏览器 10 项，模型调用为 0。Go 和完整链路在临时容器内验证，浏览器使用单进程无 GPU 配置。上述结果证明对应接线与业务行为，不代表真实模型质量或生产容量。
+
+2026-10-18 可靠性修复的[已有验收记录](docs/RELIABILITY_FIXES.md)覆盖 Go vet/test/race/build、19 项 Python 离线测试、前端构建与重试测试、隔离 MySQL 的迁移/并发去重/结果重放，以及模拟 API 下的 Chromium 重试流程。其中 AI 链路使用 Fake，浏览器专项使用模拟 API，没有新增真实模型质量或生产容量结论。
 
 - [服务拆分设计](docs/GO_PYTHON_MINIMAL_MIGRATION_PLAN.md)
 - [源码阅读与职责差异](docs/GO_PYTHON_LEARNING_DIFF.md)
