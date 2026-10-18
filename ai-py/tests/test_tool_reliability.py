@@ -87,3 +87,72 @@ async def test_ticket_without_trusted_trace_is_rejected_before_http(monkeypatch)
     monkeypatch.setattr(settings, "business_tools_backend", "go")
     with pytest.raises(ValueError, match="可信请求标识"):
         await go_client.execute_business("create_ticket", {"idempotency_key": "forged"}, ToolContext("t"))
+
+
+@pytest.mark.asyncio
+async def test_chat_request_identity_survives_new_trace_and_ignores_model(monkeypatch):
+    monkeypatch.setattr(settings, "internal_service_token", "test-service-token-01234567890123456789")
+    monkeypatch.setattr(settings, "business_tools_backend", "go")
+    payloads = []
+
+    def receive(request):
+        payloads.append(json.loads(request.content))
+        return httpx.Response(200, json={"ticket_id": "stable-ticket"})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(receive), base_url="http://go") as client:
+        monkeypatch.setattr(go_client, "_client", client)
+        for trace in ["trace_first", "trace_retry"]:
+            result = await go_client.execute_business("create_ticket", {
+                "request_id": "forged-request", "trace_id": "forged-trace", "idempotency_key": "forged-key",
+            }, ToolContext("tenant", trace, request_id="chatreq_0123456789abcdef01234567"))
+            assert result["ticket_id"] == "stable-ticket"
+    assert [p["args"]["idempotency_key"] for p in payloads] == [
+        "chatreq_0123456789abcdef01234567:create_ticket",
+        "chatreq_0123456789abcdef01234567:create_ticket",
+    ]
+    assert all("request_id" not in p["args"] and "trace_id" not in p["args"] for p in payloads)
+    assert all("request_id" not in p["context"] for p in payloads)
+
+
+@pytest.mark.asyncio
+async def test_supervisor_forwards_trusted_chat_request_to_tools(monkeypatch):
+    from app.agents import supervisor
+
+    seen = []
+
+    class Graph:
+        async def ainvoke(self, state):
+            return {"final_answer": "ok"}
+
+    def build(ctx, trace):
+        seen.append(ctx)
+        return Graph()
+
+    async def done(*args, **kwargs):
+        pass
+
+    monkeypatch.setattr(supervisor, "build_graph", build)
+    monkeypatch.setattr(supervisor.session, "append_turn", done)
+    monkeypatch.setattr(supervisor.TraceCollector, "persist", done)
+    monkeypatch.setattr(supervisor.cost, "record", done)
+    result = await supervisor.run(query="q", tenant_id="t", user_id="u", conversation_id="c",
+                                  request_id="chatreq_0123456789abcdef01234567")
+    assert result["answer"] == "ok"
+    assert seen[0].request_id == "chatreq_0123456789abcdef01234567"
+
+
+@pytest.mark.asyncio
+async def test_log_lookup_preserves_business_request_id(monkeypatch):
+    monkeypatch.setattr(settings, "internal_service_token", "test-service-token-01234567890123456789")
+    monkeypatch.setattr(settings, "business_tools_backend", "go")
+    seen = []
+
+    def receive(request):
+        seen.append(json.loads(request.content))
+        return httpx.Response(200, json={"found": True})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(receive), base_url="http://go") as client:
+        monkeypatch.setattr(go_client, "_client", client)
+        await go_client.execute_business("query_call_log", {"request_id": "req_20260615_8842"},
+                                         ToolContext("tenant", request_id="chatreq_trusted"))
+    assert seen[0]["args"]["request_id"] == "req_20260615_8842"

@@ -295,12 +295,13 @@ def build_graph(ctx: ToolContext, trace: TraceCollector):
 
 
 async def run(
-    *, query: str, tenant_id: str, user_id: str, conversation_id: str, is_internal: bool = False
+    *, query: str, tenant_id: str, user_id: str, conversation_id: str, is_internal: bool = False,
+    request_id: str | None = None
 ) -> dict:
     """执行一次完整编排，返回结果并持久化链路与记忆。"""
     trace = TraceCollector(tenant_id=tenant_id, conversation_id=conversation_id)
     ctx = ToolContext(tenant_id=tenant_id, trace_id=trace.trace_id, is_internal=is_internal,
-                      user_id=user_id, conversation_id=conversation_id)
+                      user_id=user_id, conversation_id=conversation_id, request_id=request_id)
 
     graph = build_graph(ctx, trace)
 

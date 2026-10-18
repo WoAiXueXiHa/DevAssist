@@ -47,6 +47,7 @@ class RunInput(InternalInput):
     user_id: str
     conversation_id: str
     is_internal: bool = False
+    request_id: str | None = None
 
 
 class SuggestInput(InternalInput):
@@ -67,7 +68,7 @@ async def run(body: RunInput) -> dict:
     # 身份只能来自已认证 Go 服务；不接受模型参数覆盖用户/租户/内部角色。
     from app.agents.supervisor import run as run_supervisor
 
-    return await run_supervisor(**body.model_dump())
+    return await run_supervisor(**body.model_dump(exclude_none=True))
 
 
 async def generate_suggestion(context: str) -> dict:

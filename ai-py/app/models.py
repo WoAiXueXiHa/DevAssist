@@ -260,3 +260,22 @@ class TokenUsage(Base):
     completion_tokens: Mapped[int] = mapped_column(Integer, default=0)
     total_tokens: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
+
+
+class ChatRequest(Base):
+    """Go owns request claims and saved SSE responses; Python only defines the schema."""
+    __tablename__ = "chat_request"
+    __table_args__ = (
+        UniqueConstraint("user_id", "client_request_id", name="uq_chat_request_user_client"),
+    )
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(64))
+    client_request_id: Mapped[str] = mapped_column(String(128))
+    tenant_id: Mapped[str] = mapped_column(String(64))
+    payload_hash: Mapped[str] = mapped_column(String(64))
+    conversation_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    status: Mapped[str] = mapped_column(String(16))
+    response: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    error_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime6, default=_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime6, default=_now, onupdate=_now)

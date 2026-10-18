@@ -1,13 +1,11 @@
 package api
 
 import (
-	"devsupport/backend-go/internal/model"
+	"context"
 	"devsupport/backend-go/internal/service"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"strings"
 	"time"
 )
@@ -27,73 +25,77 @@ func handoffAccepted(result map[string]any) bool {
 	return result["handoff_status"] == "accepted" && strings.TrimSpace(ticketID) != ""
 }
 func (s *Server) chat(c *gin.Context) {
-	b, ok := body(c, []string{"message"}, []string{"conversation_id"})
+	b, ok := body(c, []string{"message", "client_request_id"}, []string{"conversation_id"})
 	if !ok {
+		return
+	}
+	if !clientRequestPattern.MatchString(*b["client_request_id"]) {
+		fail(c, 422, "client_request_id 必须是 1-128 位字母、数字、下划线或连字符")
 		return
 	}
 	u := current(c)
-	var conv model.Conversation
-	found := false
-	if id := b["conversation_id"]; id != nil && *id != "" {
-		e := s.db(c).Where("id = ?", *id).Take(&conv).Error
-		if e != nil && !errors.Is(e, gorm.ErrRecordNotFound) {
-			check(c, e)
-			return
-		}
-		found = e == nil && (u.Internal() || conv.TenantID == u.TenantID)
-	}
-	if !found {
-		conv = service.NewConversation(u)
-		if !check(c, s.db(c).Create(&conv).Error) {
-			return
-		}
-	}
-	m := service.NewMessage(conv.ID, "user", *b["message"], nil)
-	// 原聊天路径存原问题，非 AI 追加/人工回复走脱敏接口；保持原路径差异。
-	// AI 前用户消息已提交并释放连接，Python 才能回调 Go 工具，避免长事务互等。
-	if !check(c, s.db(c).Create(&m).Error) {
+	request, conv, userMessage, fresh, e := s.claimChat(c.Request.Context(), u, *b["client_request_id"], *b["message"], b["conversation_id"])
+	if !check(c, e) {
 		return
 	}
+	if !fresh {
+		if !s.authorizeChatReplay(c, request, u) {
+			return
+		}
+		s.replayChat(c, request, chatPayloadHash(*b["message"], b["conversation_id"]))
+		return
+	}
+	// Once claimed, finish this bounded execution even if the browser disconnects.
+	timeout := s.Config.AITimeout
+	if timeout <= 0 {
+		timeout = 180 * time.Second
+	}
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(c.Request.Context()), timeout+15*time.Second)
+	defer cancel()
+	db := s.DB.WithContext(ctx)
 	if conv.TransferredToHuman && !u.Internal() {
-		s.stream(c, gin.H{"conversation_id": conv.ID, "message_id": m.ID, "intent": "human", "trace_id": nil}, "您的消息已转达人工技术支持，我们会尽快回复，可在「我的会话」查看进展。", 12, gin.H{"human_mode": true})
+		answer := "您的消息已转达人工技术支持，我们会尽快回复，可在「我的会话」查看进展。"
+		response := chatResponse{Meta: gin.H{"conversation_id": conv.ID, "message_id": userMessage.ID, "intent": "human", "trace_id": nil}, Answer: answer, Done: gin.H{"human_mode": true, "answer": answer}}
+		if e := s.completeChat(db, request, response, nil, conv, nil); e != nil {
+			s.failChat(c, request.ID)
+			return
+		}
+		s.stream(c, response.Meta, response.Answer, 12, response.Done)
 		return
 	}
-	result, e := s.AI.Call(c.Request.Context(), "run", gin.H{"query": *b["message"], "tenant_id": conv.TenantID, "user_id": u.ID, "conversation_id": conv.ID, "is_internal": u.Internal()})
+	result, e := s.AI.Call(ctx, "run", gin.H{"query": *b["message"], "tenant_id": conv.TenantID, "user_id": u.ID, "conversation_id": conv.ID, "is_internal": u.Internal(), "request_id": request.ID})
 	if e != nil {
-		aiFailure(c, e)
+		s.failChat(c, request.ID)
 		return
 	}
-	answer, ok := result["answer"].(string)
-	if !ok {
-		fail(c, 502, "AI 返回答案无效")
+	answer, valid := result["answer"].(string)
+	if !valid {
+		s.failChat(c, request.ID)
 		return
 	}
 	meta := gin.H{"intent": result["intent"], "citations": value(result, "citations", []any{}), "card": result["card"], "trace_id": result["trace_id"], "ticket_id": result["ticket_id"], "need_human": result["need_human"], "handoff_status": result["handoff_status"], "trace_persisted": result["trace_persisted"], "from_cache": value(result, "from_cache", false)}
 	assistant := service.NewMessage(conv.ID, "assistant", answer, meta)
-	e = s.db(c).Transaction(func(tx *gorm.DB) error {
-		if e := tx.Create(&assistant).Error; e != nil {
-			return e
-		}
-		updates := map[string]any{}
-		intent, _ := result["intent"].(string)
-		var next *string
-		if result["intent"] != nil {
-			next = &intent
-		}
-		if (next == nil) != (conv.LatestIntent == nil) || (next != nil && conv.LatestIntent != nil && *next != *conv.LatestIntent) {
-			updates["latest_intent"] = next
-		}
-		if handoffAccepted(result) && !conv.TransferredToHuman {
-			updates["transferred_to_human"] = true
-		}
-		return service.UpdateConversation(tx, conv, updates)
-	})
-	if !check(c, e) {
-		return
+	updates := map[string]any{}
+	intent, _ := result["intent"].(string)
+	var next *string
+	if result["intent"] != nil {
+		next = &intent
+	}
+	if (next == nil) != (conv.LatestIntent == nil) || (next != nil && conv.LatestIntent != nil && *next != *conv.LatestIntent) {
+		updates["latest_intent"] = next
+	}
+	if handoffAccepted(result) && !conv.TransferredToHuman {
+		updates["transferred_to_human"] = true
 	}
 	done := gin.H{"answer": answer, "card": result["card"], "citations": value(result, "citations", []any{}), "ticket_id": result["ticket_id"], "need_human": value(result, "need_human", false), "handoff_status": value(result, "handoff_status", "not_required"), "trace_persisted": result["trace_persisted"], "need_clarify": value(result, "need_clarify", false), "from_cache": value(result, "from_cache", false), "trace_id": result["trace_id"]}
-	s.stream(c, gin.H{"conversation_id": conv.ID, "message_id": assistant.ID, "intent": result["intent"], "trace_id": result["trace_id"]}, answer, 18, done)
+	response := chatResponse{Meta: gin.H{"conversation_id": conv.ID, "message_id": assistant.ID, "intent": result["intent"], "trace_id": result["trace_id"]}, Answer: answer, Done: done}
+	if e := s.completeChat(db, request, response, &assistant, conv, updates); e != nil {
+		s.failChat(c, request.ID)
+		return
+	}
+	s.stream(c, response.Meta, response.Answer, 18, response.Done)
 }
+
 func event(c *gin.Context, name, data string) bool {
 	if c.Request.Context().Err() != nil {
 		return false

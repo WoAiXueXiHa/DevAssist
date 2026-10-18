@@ -1,0 +1,65 @@
+// Actual browser UI with simulated APIs only; no backend/model calls.
+import assert from 'node:assert/strict';
+import { chromium, expect } from '@playwright/test';
+const base = process.argv[2];
+if (!base) throw new Error('Usage: node tests/browser-chat-retry.mjs http://127.0.0.1:PORT');
+const browser = await chromium.launch({ headless: true, timeout: 20000, args: ['--no-sandbox', '--disable-dev-shm-usage', '--no-zygote', '--single-process'] });
+const checks = [], key = 'pending-chat:v1:browser-tenant:browser-user';
+try {
+  const context = await browser.newContext();
+  await context.addInitScript(() => {
+    localStorage.setItem('token', 'simulated-token');
+    localStorage.setItem('user', JSON.stringify({ user_id: 'browser-user', tenant_id: 'browser-tenant', username: 'browser', display_name: 'Browser', role: 'customer' }));
+  });
+  const page = await context.newPage(), requests = [], errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.route('**/api/**', async route => {
+    assert.equal(new URL(route.request().url()).pathname, '/api/chat', 'unexpected API call');
+    requests.push(route.request().postDataJSON());
+    const meta = `event: meta\ndata: ${JSON.stringify({ conversation_id: 'simulated-conv', message_id: 'simulated-message' })}\n\n`;
+    const token = 'event: token\ndata: 中文部分回复\n\n';
+    const done = requests.length === 2 ? `event: done\ndata: ${JSON.stringify({ answer: '完整重放答案', handoff_status: 'not_required', citations: [] })}\n\n` : '';
+    await route.fulfill({ status: 200, contentType: 'text/event-stream', body: meta + token + done });
+  });
+  await page.goto(base);
+  const input = page.getByPlaceholder('描述你的问题…');
+  const send = page.locator('button.ant-btn-primary').last();
+  const retry = page.getByRole('button', { name: '重试上次请求', exact: true });
+  const pending = () => page.evaluate(k => JSON.parse(sessionStorage.getItem(k)), key);
+  await input.fill('首轮请求中文');
+  await send.click();
+  await expect(retry).toBeVisible();
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].conversation_id, null);
+  assert.equal((await pending()).id, requests[0].client_request_id);
+  assert.equal((await pending()).conversationId, null);
+  checks.push('truncated SSE retains original ID and null conversation payload');
+  await page.reload();
+  await expect(retry).toBeVisible();
+  await retry.click();
+  await expect(page.getByText('完整重放答案', { exact: true })).toBeVisible();
+  assert.equal(requests.length, 2);
+  assert.deepEqual(requests[1], requests[0]);
+  assert.equal(await pending(), null);
+  await expect(input).toBeEnabled();
+  checks.push('reload retry reuses payload and done clears pending');
+  await input.fill('新的独立请求');
+  await send.click();
+  const abandon = page.getByRole('button', { name: '结束本次重试', exact: true });
+  await expect(abandon).toBeVisible();
+  assert.equal(requests.length, 3);
+  assert.notEqual(requests[2].client_request_id, requests[0].client_request_id);
+  assert.equal(requests[2].conversation_id, 'simulated-conv');
+  checks.push('new send uses fresh ID and confirmed conversation');
+  await abandon.click();
+  await expect(page.getByText('原请求可能已经完成，已创建的工单不会撤销。请先查看会话历史和工单，避免重复提交。', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: '结束重试并开始新会话', exact: true }).click();
+  await expect(input).toBeEnabled();
+  await expect(retry).toHaveCount(0);
+  assert.equal(await pending(), null);
+  assert.equal(requests.length, 3, 'abandon does not resend');
+  checks.push('explicit abandon confirms uncertainty and clears pending without resending');
+  assert.deepEqual(errors, []);
+  console.log(JSON.stringify({ passed: true, simulated_api: true, checks }));
+  await context.close();
+} finally { await browser.close(); }

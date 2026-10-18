@@ -53,6 +53,13 @@ export const getTrace = (id: string) => api.get(`/traces/${id}`).then((r) => r.d
 export const getMetrics = () => api.get("/metrics").then((r) => r.data);
 
 /** SSE over fetch（后端 /api/chat 为 POST + EventSource 不支持 POST，故手动解析）。*/
+export class ChatRequestError extends Error {
+  constructor(message: string, public readonly status: number, public readonly code?: string) {
+    super(message);
+    this.name = "ChatRequestError";
+  }
+}
+
 export async function chatStream(
   message: string,
   conversationId: string | null,
@@ -60,7 +67,8 @@ export async function chatStream(
     onMeta?: (m: any) => void;
     onToken?: (t: string) => void;
     onDone?: (d: any) => void;
-  }
+  },
+  clientRequestId: string = crypto.randomUUID()
 ) {
   const resp = await fetch("/api/chat", {
     method: "POST",
@@ -68,12 +76,16 @@ export async function chatStream(
       "Content-Type": "application/json",
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
-    body: JSON.stringify({ message, conversation_id: conversationId }),
+    body: JSON.stringify({ message, conversation_id: conversationId, client_request_id: clientRequestId }),
   });
   if (!resp.ok) {
     const errorBody = await resp.json().catch(() => null);
     const detail = errorBody?.detail;
-    throw new Error(typeof detail === "string" ? detail : `请求失败（${resp.status}）`);
+    const code = typeof detail?.code === "string" ? detail.code : undefined;
+    const message = typeof detail === "string" ? detail
+      : typeof detail?.message === "string" ? detail.message
+      : `请求失败（${resp.status}）`;
+    throw new ChatRequestError(message, resp.status, code);
   }
   if (!resp.body || !resp.headers.get("content-type")?.includes("text/event-stream")) {
     throw new Error("对话服务返回格式异常");
@@ -110,6 +122,7 @@ export async function chatStream(
       const lines = buf.split("\n");
       buf = lines.pop() || "";
       for (const item of lines) line(item);
+      if (receivedDone) break;
       if (done) break;
     }
     // EOF 只代表连接结束；缺少 done 不能当作一次成功回复。

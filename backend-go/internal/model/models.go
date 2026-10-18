@@ -220,3 +220,19 @@ type ToolCallLog struct {
 }
 
 func (ToolCallLog) TableName() string { return "tool_call_log" }
+
+// ChatRequest claims one user submission before any AI or ticket side effects.
+type ChatRequest struct {
+	ID                   string  `gorm:"primaryKey;size:64"`
+	UserID               string  `gorm:"size:64;uniqueIndex:uq_chat_request_user_client,priority:1"`
+	ClientRequestID      string  `gorm:"size:128;uniqueIndex:uq_chat_request_user_client,priority:2"`
+	TenantID             string  `gorm:"size:64"`
+	PayloadHash          string  `gorm:"size:64"`
+	ConversationID       *string `gorm:"size:64"`
+	Status               string  `gorm:"size:16"`
+	Response             JSON
+	ErrorCode            *string `gorm:"size:64"`
+	CreatedAt, UpdatedAt time.Time
+}
+
+func (ChatRequest) TableName() string { return "chat_request" }

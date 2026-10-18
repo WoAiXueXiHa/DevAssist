@@ -26,6 +26,7 @@ class ToolContext:
     # 身份由 Supervisor 可信请求填写，禁止从模型工具参数推导。
     user_id: str = ""
     conversation_id: str | None = None
+    request_id: str | None = None
 
 
 @dataclass

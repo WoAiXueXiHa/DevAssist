@@ -76,7 +76,7 @@ def main():
             else:raise RuntimeError("真实验收进程未就绪")
         token=create_access_token(user_id="migration_user",tenant_id="migration_real",role="customer_dev")
         with httpx.Client(base_url=f"http://127.0.0.1:{gport}",timeout=180,trust_env=False) as http:
-            response=http.post("/api/chat",headers={"Authorization":"Bearer "+token},json={"message":evidence["query"]})
+            response=http.post("/api/chat",headers={"Authorization":"Bearer "+token},json={"message":evidence["query"],"client_request_id":str(uuid.uuid4())})
             evidence["http_status"]=response.status_code
             if response.status_code!=200:raise RuntimeError("真实聊天调用失败")
             current="";done=None;meta=None

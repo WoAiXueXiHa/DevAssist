@@ -38,9 +38,11 @@ async def execute_business(name: str, args: dict, ctx) -> dict:
         if k not in {"tenant_id", "user_id", "conversation_id", "is_internal", "trace_id", "idempotency_key"}
     }
     if name == "create_ticket":
-        if not ctx.trace_id:
+        business_args.pop("request_id", None)
+        operation_id = ctx.request_id or ctx.trace_id
+        if not operation_id:
             raise ValueError("创建工单缺少可信请求标识")
-        business_args["idempotency_key"] = f"{ctx.trace_id}:create_ticket"
+        business_args["idempotency_key"] = f"{operation_id}:create_ticket"
     response = await get_client().post(
         "/internal/tools/execute",
         headers={"X-Internal-Token": settings.internal_service_token},

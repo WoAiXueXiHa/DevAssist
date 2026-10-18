@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
-import { Card, Input, Button, Tag, Space, Typography, Avatar, message as antMsg } from "antd";
+import { Card, Input, Button, Tag, Space, Typography, Avatar, Modal, message as antMsg } from "antd";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { chatStream, submitFeedback } from "../api";
+import { chatStream, currentUser, submitFeedback } from "../api";
 import DiagnosisCard from "../components/DiagnosisCard";
 import Highlight from "../components/Highlight";
+import { abandonPending, newPendingChat, pendingKey, readPending, savePending, type PendingChat } from "../pendingChat";
 
 interface Msg {
   role: "user" | "assistant";
@@ -20,20 +21,48 @@ interface Msg {
 }
 
 export default function Chat() {
-  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const user = currentUser();
+  const storageKey = user ? pendingKey(user) : null;
+  const [pending, setPending] = useState<PendingChat | null>(() => storageKey ? readPending(sessionStorage, storageKey) : null);
+  const [msgs, setMsgs] = useState<Msg[]>(() => pending ? [{ role: "user", content: pending.message }] : []);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const convId = useRef<string | null>(null);
+  const convId = useRef<string | null>(pending?.conversationId ?? null);
+  const sendingRef = useRef(false);
+  const feedbackRef = useRef(false);
+  const [feedbackPending, setFeedbackPending] = useState(false);
+  const busy = sending || feedbackPending;
 
-  const send = async () => {
-    const text = input.trim();
-    if (!text || sending) return;
-    setInput("");
+  const abandon = () => Modal.confirm({
+    title: "结束本次重试并开始新会话？",
+    content: "原请求可能已经完成，已创建的工单不会撤销。请先查看会话历史和工单，避免重复提交。",
+    okText: "结束重试并开始新会话",
+    cancelText: "保留重试",
+    onOk: () => {
+      if (!storageKey || sendingRef.current || feedbackRef.current) return;
+      try { abandonPending(sessionStorage, storageKey); }
+      catch { antMsg.error("浏览器未能清理重试记录，请检查存储设置。"); return; }
+      setPending(null);
+      setMsgs([]);
+      setInput("");
+      convId.current = null;
+    },
+  });
+
+  const send = async (retry = false) => {
+    if (sendingRef.current || feedbackRef.current || (!retry && pending)) return;
+    const request = retry ? pending : newPendingChat(input.trim(), convId.current);
+    if (!request?.message || !storageKey) return;
+    // Persist before sending; unavailable storage must not leave an unrepeatable request.
+    try { savePending(sessionStorage, storageKey, request); }
+    catch { antMsg.error("无法保存待发送请求，请检查浏览器存储设置后重试。"); return; }
+    setPending(request);
+    sendingRef.current = true;
     setSending(true);
-    // 先插入用户消息和一条占位的流式助手消息，后续 SSE 回调持续更新最后这条
-    setMsgs((m) => [...m, { role: "user", content: text }, { role: "assistant", content: "", streaming: true }]);
+    setInput("");
+    setMsgs((m) => [...m, ...(!retry ? [{ role: "user" as const, content: request.message }] : []), { role: "assistant", content: "", streaming: true }]);
     try {
-      await chatStream(text, convId.current, {
+      await chatStream(request.message, request.conversationId, {
         // meta：拿到会话/消息 id（首轮会创建新会话）
         onMeta: (m) => {
           convId.current = m.conversation_id;
@@ -52,7 +81,10 @@ export default function Chat() {
             return c;
           }),
         // done：用完整结构化结果（卡片/引用/工单等）覆盖占位消息
-        onDone: (d) =>
+        onDone: (d) => {
+          try { savePending(sessionStorage, storageKey, null); }
+          catch { antMsg.warning("回复已完成，但浏览器未能清理重试记录。"); }
+          setPending(null);
           setMsgs((prev) => {
             const c = prev.slice();
             c[c.length - 1] = {
@@ -67,30 +99,43 @@ export default function Chat() {
               from_cache: d.from_cache,
             };
             return c;
-          }),
-      });
+          });
+        },
+      }, request.id);
     } catch (error) {
       antMsg.error(error instanceof Error ? error.message : "对话失败");
       setMsgs((prev) => prev.filter((_, i) => i !== prev.length - 1));
     } finally {
+      sendingRef.current = false;
       setSending(false);
     }
   };
 
   const feedback = async (type: string) => {
-    if (!convId.current) {
+    if (sendingRef.current || feedbackRef.current) return;
+    const feedbackConversation = convId.current;
+    if (!feedbackConversation) {
       antMsg.info("请先开始对话");
       return;
     }
-    const r = await submitFeedback({ conversation_id: convId.current, type });
-    if (type === "need_human" && r.ticket_id) {
-      antMsg.success(`已转人工，工单 ${r.ticket_id}`);
-      setMsgs((m) => [
-        ...m,
-        { role: "assistant", content: `已为你转接人工技术支持，工单号 ${r.ticket_id}，技术支持会尽快跟进。`, ticket_id: r.ticket_id },
-      ]);
-    } else {
-      antMsg.success(type === "resolved" ? "已标记为已解决" : "已记录");
+    feedbackRef.current = true;
+    setFeedbackPending(true);
+    try {
+      const r = await submitFeedback({ conversation_id: feedbackConversation, type });
+      if (type === "need_human" && r.ticket_id) {
+        antMsg.success(`已转人工，工单 ${r.ticket_id}`);
+        setMsgs((m) => [
+          ...m,
+          { role: "assistant", content: `已为你转接人工技术支持，工单号 ${r.ticket_id}，技术支持会尽快跟进。`, ticket_id: r.ticket_id },
+        ]);
+      } else {
+        antMsg.success(type === "resolved" ? "已标记为已解决" : "已记录");
+      }
+    } catch (error) {
+      antMsg.error(error instanceof Error ? error.message : "反馈提交失败");
+    } finally {
+      feedbackRef.current = false;
+      setFeedbackPending(false);
     }
   };
 
@@ -98,7 +143,7 @@ export default function Chat() {
     <div style={{ maxWidth: 860, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <Typography.Text strong>智能技术支持</Typography.Text>
-        <Button size="small" onClick={() => feedback("need_human")}>🙋 转人工</Button>
+        <Button size="small" disabled={busy} onClick={() => feedback("need_human")}>🙋 转人工</Button>
       </div>
       <div style={{ minHeight: "60vh", marginBottom: 16 }}>
         {msgs.length === 0 && (
@@ -144,9 +189,9 @@ export default function Chat() {
                     </div>
                   )}
                   <Space style={{ marginTop: 8 }}>
-                    <Button size="small" onClick={() => feedback("resolved")}>✅ 已解决</Button>
-                    <Button size="small" onClick={() => feedback("unresolved")}>❌ 没解决</Button>
-                    <Button size="small" onClick={() => feedback("need_human")}>🙋 需要人工</Button>
+                    <Button size="small" disabled={busy} onClick={() => feedback("resolved")}>✅ 已解决</Button>
+                    <Button size="small" disabled={busy} onClick={() => feedback("unresolved")}>❌ 没解决</Button>
+                    <Button size="small" disabled={busy} onClick={() => feedback("need_human")}>🙋 需要人工</Button>
                   </Space>
                 </div>
               )}
@@ -155,15 +200,21 @@ export default function Chat() {
           );
         })}
       </div>
+      {pending && !sending && <Space style={{ marginBottom: 12 }}>
+        <Typography.Text type="warning">上次请求尚未确认完成，可重试获取结果。</Typography.Text>
+        <Button disabled={busy} onClick={() => send(true)}>重试上次请求</Button>
+        <Button disabled={busy} onClick={abandon}>结束本次重试</Button>
+      </Space>}
       <Space.Compact style={{ width: "100%" }}>
         <Input.TextArea
+          disabled={!!pending || busy}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           autoSize={{ minRows: 1, maxRows: 4 }}
           onPressEnter={(e) => { e.preventDefault(); send(); }}
           placeholder="描述你的问题…"
         />
-        <Button type="primary" onClick={send} loading={sending}>发送</Button>
+        <Button type="primary" onClick={() => send()} disabled={!!pending || feedbackPending} loading={sending}>发送</Button>
       </Space.Compact>
     </div>
   );
