@@ -16,7 +16,7 @@ MAX_ENTRIES = 200
 
 
 def _key(tenant_id: str) -> str:
-    return f"semcache:{tenant_id}"
+    return f"semcache:v2:{tenant_id}"
 
 
 def _cosine(a: np.ndarray, b: np.ndarray) -> float:

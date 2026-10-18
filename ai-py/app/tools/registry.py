@@ -7,6 +7,7 @@
 
 import asyncio
 import json
+import logging
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
@@ -40,6 +41,7 @@ class ToolSpec:
 
 
 REGISTRY: dict[str, ToolSpec] = {}
+logger = logging.getLogger(__name__)
 
 
 def register(spec: ToolSpec) -> ToolSpec:
@@ -95,19 +97,26 @@ async def execute(name: str, args: dict, ctx: ToolContext) -> dict:
 
     start = time.perf_counter()
     last_err = None
+    data = {}
+    status = "error"
     for attempt in range(spec.retries + 1):
         try:
             data = await asyncio.wait_for(spec.func(args, ctx), timeout=spec.timeout)
-            duration = int((time.perf_counter() - start) * 1000)
-            result = {"ok": True, "data": data}
-            await _log_call(ctx, name, args, data, "ok", duration, None)
-            return result
+            status = "ok"
+            last_err = None
+            break
         except asyncio.TimeoutError:
             last_err = f"工具调用超时(>{spec.timeout}s)"
         except Exception as e:  # noqa: BLE001
             last_err = f"{type(e).__name__}: {e}"
     duration = int((time.perf_counter() - start) * 1000)
-    await _log_call(ctx, name, args, {}, "error", duration, last_err)
+    # 日志持久化失败不能重跑业务操作，也不能覆盖已取得的业务结果。
+    try:
+        await _log_call(ctx, name, args, data, status, duration, last_err)
+    except Exception:  # noqa: BLE001
+        logger.exception("Tool log persistence failed: tool=%s trace_id=%s", name, ctx.trace_id)
+    if status == "ok":
+        return {"ok": True, "data": data}
     return {"ok": False, "error": last_err}
 
 

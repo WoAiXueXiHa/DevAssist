@@ -47,3 +47,15 @@ async def update_entities(conv_id: str, new_entities: dict) -> dict:
     r = get_redis()
     await r.set(_ent_key(conv_id), json.dumps(current, ensure_ascii=False), ex=ENTITY_TTL)
     return current
+
+
+async def append_turn(conv_id: str, query: str, answer: str) -> None:
+    """Store a complete turn atomically so a failed write cannot leave half a turn."""
+    r = get_redis()
+    async with r.pipeline(transaction=True) as pipe:
+        pipe.rpush(_hist_key(conv_id),
+                   json.dumps({"role": "user", "content": query}, ensure_ascii=False),
+                   json.dumps({"role": "assistant", "content": answer}, ensure_ascii=False))
+        pipe.ltrim(_hist_key(conv_id), -HISTORY_MAX, -1)
+        pipe.expire(_hist_key(conv_id), ENTITY_TTL)
+        await pipe.execute()

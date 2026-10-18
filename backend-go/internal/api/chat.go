@@ -20,6 +20,12 @@ func value(result map[string]any, key string, defaultValue any) any {
 	return v
 }
 func boolValue(v any) bool { b, _ := v.(bool); return b }
+
+// 人工受理以已确认的工单为准，不能仅凭模型的处理意图切换会话。
+func handoffAccepted(result map[string]any) bool {
+	ticketID, _ := result["ticket_id"].(string)
+	return result["handoff_status"] == "accepted" && strings.TrimSpace(ticketID) != ""
+}
 func (s *Server) chat(c *gin.Context) {
 	b, ok := body(c, []string{"message"}, []string{"conversation_id"})
 	if !ok {
@@ -62,7 +68,7 @@ func (s *Server) chat(c *gin.Context) {
 		fail(c, 502, "AI 返回答案无效")
 		return
 	}
-	meta := gin.H{"intent": result["intent"], "citations": value(result, "citations", []any{}), "card": result["card"], "trace_id": result["trace_id"], "ticket_id": result["ticket_id"], "need_human": result["need_human"], "from_cache": value(result, "from_cache", false)}
+	meta := gin.H{"intent": result["intent"], "citations": value(result, "citations", []any{}), "card": result["card"], "trace_id": result["trace_id"], "ticket_id": result["ticket_id"], "need_human": result["need_human"], "handoff_status": result["handoff_status"], "trace_persisted": result["trace_persisted"], "from_cache": value(result, "from_cache", false)}
 	assistant := service.NewMessage(conv.ID, "assistant", answer, meta)
 	e = s.db(c).Transaction(func(tx *gorm.DB) error {
 		if e := tx.Create(&assistant).Error; e != nil {
@@ -77,7 +83,7 @@ func (s *Server) chat(c *gin.Context) {
 		if (next == nil) != (conv.LatestIntent == nil) || (next != nil && conv.LatestIntent != nil && *next != *conv.LatestIntent) {
 			updates["latest_intent"] = next
 		}
-		if boolValue(result["need_human"]) && !conv.TransferredToHuman {
+		if handoffAccepted(result) && !conv.TransferredToHuman {
 			updates["transferred_to_human"] = true
 		}
 		return service.UpdateConversation(tx, conv, updates)
@@ -85,7 +91,7 @@ func (s *Server) chat(c *gin.Context) {
 	if !check(c, e) {
 		return
 	}
-	done := gin.H{"answer": answer, "card": result["card"], "citations": value(result, "citations", []any{}), "ticket_id": result["ticket_id"], "need_human": value(result, "need_human", false), "need_clarify": value(result, "need_clarify", false), "from_cache": value(result, "from_cache", false), "trace_id": result["trace_id"]}
+	done := gin.H{"answer": answer, "card": result["card"], "citations": value(result, "citations", []any{}), "ticket_id": result["ticket_id"], "need_human": value(result, "need_human", false), "handoff_status": value(result, "handoff_status", "not_required"), "trace_persisted": result["trace_persisted"], "need_clarify": value(result, "need_clarify", false), "from_cache": value(result, "from_cache", false), "trace_id": result["trace_id"]}
 	s.stream(c, gin.H{"conversation_id": conv.ID, "message_id": assistant.ID, "intent": result["intent"], "trace_id": result["trace_id"]}, answer, 18, done)
 }
 func event(c *gin.Context, name, data string) bool {

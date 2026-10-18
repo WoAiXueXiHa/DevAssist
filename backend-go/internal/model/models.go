@@ -111,14 +111,16 @@ type Message struct {
 func (Message) TableName() string { return "message" }
 
 type Ticket struct {
-	TicketID                                                     string `gorm:"primaryKey"`
-	TenantID, UserID, Category, Priority, Status, Title, Summary string
-	RelatedRequestIDs                                            JSON `gorm:"column:related_request_ids"`
-	RelatedEndpoint, ErrorCode                                   *string
-	Evidence                                                     string
-	AIDiagnosis                                                  string `gorm:"column:ai_diagnosis"`
-	Assignee, ConversationID                                     *string
-	CreatedAt, UpdatedAt                                         time.Time
+	TicketID                                           string  `gorm:"primaryKey"`
+	TenantID                                           string  `gorm:"size:64;uniqueIndex:uq_ticket_tenant_idempotency,priority:1"`
+	IdempotencyKey                                     *string `gorm:"size:128;uniqueIndex:uq_ticket_tenant_idempotency,priority:2"`
+	UserID, Category, Priority, Status, Title, Summary string
+	RelatedRequestIDs                                  JSON `gorm:"column:related_request_ids"`
+	RelatedEndpoint, ErrorCode                         *string
+	Evidence                                           string
+	AIDiagnosis                                        string `gorm:"column:ai_diagnosis"`
+	Assignee, ConversationID                           *string
+	CreatedAt, UpdatedAt                               time.Time
 }
 
 func (Ticket) TableName() string { return "ticket" }

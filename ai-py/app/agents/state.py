@@ -29,6 +29,9 @@ class AgentState(TypedDict, total=False):
     draft_answer: str
     final_answer: str
     card: dict | None
+    handoff_status: str
+    failed_agents: list[str]
+    rag_hit: bool
     need_human: bool
     pending_ticket: bool        # 是否需要建单（诊断证据不足等）
     ticket_id: str

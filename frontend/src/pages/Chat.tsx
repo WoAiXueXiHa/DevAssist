@@ -13,6 +13,7 @@ interface Msg {
   card?: any;
   ticket_id?: string | null;
   need_human?: boolean;
+  handoff_status?: "not_required" | "accepted" | "failed";
   from_cache?: boolean;
   message_id?: string;
   streaming?: boolean;
@@ -62,6 +63,7 @@ export default function Chat() {
               citations: d.citations,
               ticket_id: d.ticket_id,
               need_human: d.need_human,
+              handoff_status: d.handoff_status,
               from_cache: d.from_cache,
             };
             return c;
@@ -130,7 +132,8 @@ export default function Chat() {
                 <div style={{ marginTop: 8 }}>
                   <Tag color="green">🤖 AI 助手</Tag>
                   {m.from_cache && <Tag color="gold">缓存命中</Tag>}
-                  {m.need_human && <Tag color="volcano">已转人工</Tag>}
+                  {m.handoff_status === "accepted" && m.ticket_id && <Tag color="volcano">已转人工</Tag>}
+                  {m.handoff_status === "failed" && <Tag color="orange">人工登记失败，请重试</Tag>}
                   {m.ticket_id && <Tag color="blue">工单 {m.ticket_id}</Tag>}
                   {m.citations && m.citations.length > 0 && (
                     <div style={{ marginTop: 6 }}>

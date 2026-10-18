@@ -35,8 +35,12 @@ async def execute_business(name: str, args: dict, ctx) -> dict:
     # 模型传来的同名参数不具有身份效力，可信上下文单独传输。
     business_args = {
         k: v for k, v in args.items()
-        if k not in {"tenant_id", "user_id", "conversation_id", "is_internal", "trace_id"}
+        if k not in {"tenant_id", "user_id", "conversation_id", "is_internal", "trace_id", "idempotency_key"}
     }
+    if name == "create_ticket":
+        if not ctx.trace_id:
+            raise ValueError("创建工单缺少可信请求标识")
+        business_args["idempotency_key"] = f"{ctx.trace_id}:create_ticket"
     response = await get_client().post(
         "/internal/tools/execute",
         headers={"X-Internal-Token": settings.internal_service_token},

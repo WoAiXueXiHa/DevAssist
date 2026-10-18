@@ -93,10 +93,12 @@ func (s *Server) feedback(c *gin.Context) {
 			t.Summary = title
 			t.AIDiagnosis = "用户在会话中主动请求人工支持"
 			t.ConversationID = &v.ID
-			tid = &t.TicketID
-			if e := tx.Create(&t).Error; e != nil {
+			key := "feedback:need_human:" + v.ID
+			t.IdempotencyKey = &key
+			if e := service.CreateTicketIdempotent(tx, &t); e != nil {
 				return e
 			}
+			tid = &t.TicketID
 		}
 		return service.UpdateConversation(tx, v, changes)
 	})

@@ -5,6 +5,7 @@
 """
 
 import asyncio
+import logging
 
 from langgraph.graph import END, START, StateGraph
 
@@ -13,7 +14,6 @@ from app.agents.state import AgentState
 from app.agents.util import render_card
 from app.cache import route_cache, semantic_cache
 from app.config import settings
-from app.guardrail import fallback
 from app.llm import client
 from app.llm.router import model_for
 from app.memory import session
@@ -22,6 +22,16 @@ from app.observability.trace import TraceCollector, timer
 from app.tools.registry import ToolContext, load_tools
 
 load_tools()
+logger = logging.getLogger(__name__)
+
+
+async def _best_effort(label, operation):
+    """Auxiliary persistence must not discard a completed business result."""
+    try:
+        return True, await operation
+    except Exception:
+        logger.exception("Auxiliary operation failed: %s", label)
+        return False, None
 
 
 async def _general_reply(query: str) -> tuple[str, int]:
@@ -48,13 +58,16 @@ def build_graph(ctx: ToolContext, trace: TraceCollector):
     async def intent_node(state: AgentState) -> dict:
         history = state.get("history")
         with timer() as t:
-            cached_route = None if history else await route_cache.get(state["query"])
+            cached_route = None
+            if not history:
+                _, cached_route = await _best_effort(
+                    "route cache read", route_cache.get(state["query"]))
             if cached_route:
                 res = {**cached_route, "tokens": 0}
             else:
                 res = await intent_router.classify(state["query"], history)
                 if not history:
-                    await route_cache.put(state["query"], res)
+                    await _best_effort("route cache write", route_cache.put(state["query"], res))
         # 合并记忆中的实体（新抽取覆盖/补充）
         merged = await session.update_entities(state["conversation_id"], res["entities"])
         trace.step(
@@ -95,7 +108,8 @@ def build_graph(ctx: ToolContext, trace: TraceCollector):
 
     async def semantic_cache_node(state: AgentState) -> dict:
         with timer() as ct:
-            cached, query_emb = await semantic_cache.get(state["tenant_id"], state["query"])
+            ok, cache_result = await _best_effort("semantic cache read", semantic_cache.get(state["tenant_id"], state["query"]))
+            cached, query_emb = cache_result if ok else (None, None)
         if cached:
             trace.step("semantic_cache", input_summary=state["query"],
                        output_summary=f"命中 similarity={cached['similarity']}", duration_ms=ct.ms)
@@ -129,6 +143,7 @@ def build_graph(ctx: ToolContext, trace: TraceCollector):
         citations: list = []
         need_human = False
         need_ticket = False
+        failed_agents = []
 
         if not route:  # chitchat
             with timer() as t:
@@ -150,6 +165,7 @@ def build_graph(ctx: ToolContext, trace: TraceCollector):
         results = await asyncio.gather(*coros)
         for name, result, t, err in results:
             if err:
+                failed_agents.append(name)
                 trace.step(name, input_summary=query, status="error", duration_ms=t.ms, error=err)
                 continue
             tok = getattr(result, "tokens", 0)
@@ -166,15 +182,17 @@ def build_graph(ctx: ToolContext, trace: TraceCollector):
         return {
             "agent_outputs": outputs,
             "rag_citations": citations,
-            "need_human": need_human or state["intent"] == "ticket",
-            "pending_ticket": need_ticket,
+            "need_human": need_human or state["intent"] == "ticket" or bool(failed_agents and not outputs),
+            "pending_ticket": need_ticket or bool(failed_agents and not outputs),
+            "failed_agents": failed_agents,
+            "rag_hit": bool(getattr(outputs.get("doc_rag"), "hit", False)),
         }
 
     async def ticket_node(state: AgentState) -> dict:
         outputs = state.get("agent_outputs", {})
         need_ticket = state.get("pending_ticket") or state.get("need_human")
         if not need_ticket:
-            return {}
+            return {"handoff_status": "not_required"}
         # 汇总现有诊断作为工单上下文
         ai_diag = ""
         evidence = {}
@@ -190,7 +208,8 @@ def build_graph(ctx: ToolContext, trace: TraceCollector):
                 ai_diagnosis=ai_diag, evidence=evidence, ctx=ctx,
                 user_id=state.get("user_id", ""), conversation_id=state["conversation_id"])
         trace.step("ticket", input_summary=state["query"], output_summary=tk.message, duration_ms=t.ms)
-        return {"ticket_id": tk.ticket_id, "ticket_message": tk.message}
+        return {"ticket_id": tk.ticket_id, "ticket_message": tk.message if tk.ticket_id else "暂时无法登记工单，请稍后重试。",
+                "handoff_status": "accepted" if tk.ticket_id else "failed", "need_human": True}
 
     async def summarize_node(state: AgentState) -> dict:
         outputs = state.get("agent_outputs", {})
@@ -224,7 +243,20 @@ def build_graph(ctx: ToolContext, trace: TraceCollector):
             }
             draft = render_card(card)
         else:
-            draft = "这个问题我先帮你转接人工技术支持，请稍候。"
+            draft = "\n\n".join(getattr(o, "answer", "") for o in outputs.values() if getattr(o, "answer", ""))
+            if not draft:
+                draft = "暂时无法完成自动分析。"
+        # Preserve text-only specialist outputs alongside cards.
+        plain = []
+        if cards:
+            plain = [getattr(o, "answer", "") for o in outputs.values() if not isinstance(o, str) and not getattr(o, "card", None)]
+            draft = "\n\n".join([draft] + [text for text in plain if text])
+        if state.get("failed_agents") and outputs:
+            draft += "\n\n部分信息暂时无法取得，以上为已完成的分析。"
+        # The UI renders cards instead of answer text. Use the full text when
+        # supplemental content cannot be represented by the structured card.
+        if any(plain) or state.get("failed_agents"):
+            card = None
         return {"draft_answer": draft, "card": card}
 
     async def security_node(state: AgentState) -> dict:
@@ -280,16 +312,20 @@ async def run(
         final = await graph.ainvoke(init)
     except Exception as e:  # noqa: BLE001  管线级兜底：规则回复 + 自动建单转人工
         trace.step("fallback", input_summary=query, status="error", error=f"{type(e).__name__}: {e}")
-        tk = await ticket.create_from_context(
-            query=query, intent="ticket", entities={}, ai_diagnosis="",
-            evidence={"pipeline_error": f"{type(e).__name__}: {e}"}, ctx=ctx,
-            user_id=user_id, conversation_id=conversation_id)
-        await trace.persist()
-        return {
-            "answer": f"{fallback.rule_reply(None)}（工单号 {tk.ticket_id}）",
-            "intent": None, "confidence": 0.0, "citations": [], "need_human": True,
-            "ticket_id": tk.ticket_id, "trace_id": trace.trace_id,
-            "total_tokens": trace.total_tokens, "entities": {}, "need_clarify": False,
+        try:
+            tk = await ticket.create_from_context(
+                query=query, intent="ticket", entities={}, ai_diagnosis="",
+                evidence={"pipeline_error": f"{type(e).__name__}: {e}"}, ctx=ctx,
+                user_id=user_id, conversation_id=conversation_id)
+        except Exception:
+            logger.exception("Fallback ticket creation failed")
+            tk = ticket.TicketResult(ticket_id=None, message="暂时无法登记工单，请稍后重试。")
+        final = {
+            "final_answer": "暂时无法完成自动分析。",
+            "ticket_message": tk.message if tk.ticket_id else "暂时无法登记工单，请稍后重试。",
+            "intent": None, "confidence": 0.0, "rag_citations": [], "need_human": True,
+            "ticket_id": tk.ticket_id, "handoff_status": "accepted" if tk.ticket_id else "failed",
+            "entities": {}, "need_clarify": False,
         }
 
     # 建单友好提示统一在此拼接（最终状态稳定含 ticket_message，避免节点可见性时序问题）
@@ -306,6 +342,7 @@ async def run(
         "card": final.get("card"),
         "need_human": final.get("need_human", False),
         "ticket_id": final.get("ticket_id"),
+        "handoff_status": final.get("handoff_status", "not_required"),
         "trace_id": trace.trace_id,
         "total_tokens": trace.total_tokens,
         "entities": final.get("entities", {}),
@@ -314,15 +351,16 @@ async def run(
     }
 
     # 记忆：写入本轮对话
-    await session.append_message(conversation_id, "user", query)
-    await session.append_message(conversation_id, "assistant", result["answer"])
+    await _best_effort("conversation memory", session.append_turn(conversation_id, query, result["answer"]))
     # 持久化链路
-    await trace.persist()
+    result["trace_persisted"], _ = await _best_effort("trace persistence", trace.persist())
     # 成本统计
-    await cost.record(tenant_id, conversation_id, "mixed", trace.total_tokens)
+    await _best_effort("cost recording", cost.record(tenant_id, conversation_id, "mixed", trace.total_tokens))
     # 语义缓存：仅缓存通用文档问答结果
     if (
         final.get("intent") == "doc_qa"
+        and final.get("rag_hit")
+        and not final.get("failed_agents")
         and not final.get("need_clarify")
         and not final.get("need_human")
         and not final.get("history")
@@ -330,6 +368,6 @@ async def run(
         and result["answer"]
         and final.get("query_embedding") is not None
     ):
-        await semantic_cache.put(tenant_id, query, result, final["query_embedding"])
+        await _best_effort("semantic cache write", semantic_cache.put(tenant_id, query, result, final["query_embedding"]))
 
     return result

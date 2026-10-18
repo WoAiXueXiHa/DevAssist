@@ -10,6 +10,7 @@ import argparse
 from app import models  # noqa: F401  确保所有模型注册到 Base.metadata
 from app.db import Base, sync_engine
 from app.rag import store
+from scripts.migrate_ticket_idempotency import migrate
 
 
 def main() -> None:
@@ -22,6 +23,7 @@ def main() -> None:
         Base.metadata.drop_all(sync_engine)
     print("[init_db] 创建 MySQL 表 ...")
     Base.metadata.create_all(sync_engine)
+    migrate(sync_engine)
     tables = sorted(Base.metadata.tables.keys())
     print(f"[init_db] MySQL 表就绪（{len(tables)}）：{tables}")
 

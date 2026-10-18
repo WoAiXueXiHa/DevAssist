@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 	"math"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -206,6 +207,10 @@ func (t Tools) Execute(ctx context.Context, name string, a map[string]any, ident
 		}
 		return map[string]any{"found": true, "bills": out}, nil
 	case "create_ticket":
+		key := strings.TrimSpace(str(a, "idempotency_key", ""))
+		if key == "" || len(key) > 128 {
+			return nil, fmt.Errorf("create_ticket requires idempotency_key (1-128 bytes)")
+		}
 		v := NewTicket(identity.TenantID, identity.UserID, str(a, "title", "技术支持工单"), str(a, "category", "其它"), str(a, "priority", "P2"))
 		v.Summary = str(a, "summary", "")
 		if requests, ok := a["related_request_ids"]; ok {
@@ -216,11 +221,11 @@ func (t Tools) Execute(ctx context.Context, name string, a map[string]any, ident
 		v.Evidence = str(a, "evidence", "")
 		v.AIDiagnosis = str(a, "ai_diagnosis", "")
 		v.ConversationID = identity.ConversationID
-		// 写入工具不加重试/去重；Python 原 registry 的重试仍可能生成重复工单。
-		if e := db.Create(&v).Error; e != nil {
+		v.IdempotencyKey = &key
+		if e := CreateTicketIdempotent(db, &v); e != nil {
 			return nil, e
 		}
-		return map[string]any{"ticket_id": v.TicketID, "status": "new", "priority": v.Priority}, nil
+		return map[string]any{"ticket_id": v.TicketID, "status": v.Status, "priority": v.Priority}, nil
 	case "query_ticket":
 		var v model.Ticket
 		e := db.Where("ticket_id = ?", a["ticket_id"]).Take(&v).Error

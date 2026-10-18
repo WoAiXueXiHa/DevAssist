@@ -103,3 +103,20 @@ func TestEmbeddedBodyAndBearerErrors(t *testing.T) {
 		}
 	}
 }
+
+func TestHandoffRequiresConfirmedTicket(t *testing.T) {
+	for _, tc := range []struct {
+		result   map[string]any
+		accepted bool
+	}{
+		{map[string]any{"need_human": true}, false},
+		{map[string]any{"need_human": true, "handoff_status": "failed"}, false},
+		{map[string]any{"handoff_status": "accepted", "ticket_id": nil}, false},
+		{map[string]any{"handoff_status": "accepted", "ticket_id": "  "}, false},
+		{map[string]any{"handoff_status": "accepted", "ticket_id": "tk_confirmed"}, true},
+	} {
+		if got := handoffAccepted(tc.result); got != tc.accepted {
+			t.Fatalf("%v: accepted=%v", tc.result, got)
+		}
+	}
+}

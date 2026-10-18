@@ -13,6 +13,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    UniqueConstraint,
     func,
 )
 from sqlalchemy.dialects.mysql import DATETIME as MySQLDATETIME
@@ -206,6 +207,8 @@ class ToolCallLog(Base):
 # ============ 工单 / 反馈 / 审计 ============
 class Ticket(Base):
     __tablename__ = "ticket"
+    __table_args__ = (UniqueConstraint("tenant_id", "idempotency_key", name="uq_ticket_tenant_idempotency"),)
+    idempotency_key: Mapped[str | None] = mapped_column(String(128), nullable=True)
     ticket_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     tenant_id: Mapped[str] = mapped_column(String(64), index=True)
     user_id: Mapped[str] = mapped_column(String(64), index=True)
