@@ -1,0 +1,353 @@
+{
+  "scope": "cache+RAG function pipeline; not HTTP or full supervisor; cold is cache miss, not cache disabled",
+  "primary_doc_questions": {
+    "cold_miss": {
+      "count": 8,
+      "successful": 8,
+      "failures": 0,
+      "samples_ms": [
+        3326.577685999837,
+        3161.4923819997784,
+        3333.3788049999384,
+        3916.78610200006,
+        3233.6154360000364,
+        3172.655366000072,
+        3442.4587489997975,
+        3389.274882999871
+      ],
+      "mean_ms": 3372.029926124924,
+      "p50_ms": 3329.9782454998876,
+      "calls": {
+        "embed": 16,
+        "rerank": 8,
+        "chat": 8
+      }
+    },
+    "warm_hit": {
+      "count": 8,
+      "successful": 8,
+      "failures": 0,
+      "samples_ms": [
+        169.19553099978657,
+        181.1915719999888,
+        178.17669100031708,
+        185.7658789999732,
+        97.72513000007166,
+        116.73069300013594,
+        157.37507299991194,
+        250.76797800011263
+      ],
+      "mean_ms": 167.11606837503723,
+      "p50_ms": 173.68611100005182,
+      "calls": {
+        "embed": 8,
+        "rerank": 0,
+        "chat": 0
+      }
+    },
+    "latency_reduction_pct": 95.04405144567967,
+    "speed_ratio": 20.177772005487277,
+    "hits": 8
+  },
+  "all_module_questions": {
+    "cold_miss": {
+      "count": 12,
+      "successful": 12,
+      "failures": 0,
+      "samples_ms": [
+        3326.577685999837,
+        3161.4923819997784,
+        3333.3788049999384,
+        3916.78610200006,
+        3233.6154360000364,
+        3172.655366000072,
+        3442.4587489997975,
+        3389.274882999871,
+        3245.5679489999056,
+        3400.0870149998264,
+        3309.0802169999733,
+        3375.3956909999943
+      ],
+      "mean_ms": 3358.8641900832577,
+      "p50_ms": 3329.9782454998876,
+      "calls": {
+        "embed": 24,
+        "rerank": 12,
+        "chat": 12
+      }
+    },
+    "warm_hit": {
+      "count": 12,
+      "successful": 12,
+      "failures": 0,
+      "samples_ms": [
+        169.19553099978657,
+        181.1915719999888,
+        178.17669100031708,
+        185.7658789999732,
+        97.72513000007166,
+        116.73069300013594,
+        157.37507299991194,
+        250.76797800011263,
+        208.62579699996786,
+        170.78059100003884,
+        133.98130699988542,
+        186.43991299995832
+      ],
+      "mean_ms": 169.7296795833457,
+      "p50_ms": 174.47864100017796,
+      "calls": {
+        "embed": 12,
+        "rerank": 0,
+        "chat": 0
+      }
+    },
+    "latency_reduction_pct": 94.9468132684716,
+    "speed_ratio": 19.789492317010406,
+    "hits": 12
+  },
+  "per_case": {
+    "C1": {
+      "cold_miss": {
+        "count": 4,
+        "successful": 4,
+        "failures": 0,
+        "samples_ms": [
+          3326.577685999837,
+          3161.4923819997784,
+          3333.3788049999384,
+          3916.78610200006
+        ],
+        "mean_ms": 3434.5587437499034,
+        "p50_ms": 3329.9782454998876,
+        "calls": {
+          "embed": 8,
+          "rerank": 4,
+          "chat": 4
+        }
+      },
+      "warm_hit": {
+        "count": 4,
+        "successful": 4,
+        "failures": 0,
+        "samples_ms": [
+          169.19553099978657,
+          181.1915719999888,
+          178.17669100031708,
+          185.7658789999732
+        ],
+        "mean_ms": 178.58241825001642,
+        "p50_ms": 179.68413150015294,
+        "calls": {
+          "embed": 4,
+          "rerank": 0,
+          "chat": 0
+        }
+      },
+      "latency_reduction_pct": 94.80042615154,
+      "speed_ratio": 19.23234536415282,
+      "hits": 4
+    },
+    "C2": {
+      "cold_miss": {
+        "count": 4,
+        "successful": 4,
+        "failures": 0,
+        "samples_ms": [
+          3233.6154360000364,
+          3172.655366000072,
+          3442.4587489997975,
+          3389.274882999871
+        ],
+        "mean_ms": 3309.501108499944,
+        "p50_ms": 3311.4451594999537,
+        "calls": {
+          "embed": 8,
+          "rerank": 4,
+          "chat": 4
+        }
+      },
+      "warm_hit": {
+        "count": 4,
+        "successful": 4,
+        "failures": 0,
+        "samples_ms": [
+          97.72513000007166,
+          116.73069300013594,
+          157.37507299991194,
+          250.76797800011263
+        ],
+        "mean_ms": 155.64971850005804,
+        "p50_ms": 137.05288300002394,
+        "calls": {
+          "embed": 4,
+          "rerank": 0,
+          "chat": 0
+        }
+      },
+      "latency_reduction_pct": 95.2968827204712,
+      "speed_ratio": 21.26249337546158,
+      "hits": 4
+    },
+    "C3": {
+      "cold_miss": {
+        "count": 4,
+        "successful": 4,
+        "failures": 0,
+        "samples_ms": [
+          3245.5679489999056,
+          3400.0870149998264,
+          3309.0802169999733,
+          3375.3956909999943
+        ],
+        "mean_ms": 3332.532717999925,
+        "p50_ms": 3342.237953999984,
+        "calls": {
+          "embed": 8,
+          "rerank": 4,
+          "chat": 4
+        }
+      },
+      "warm_hit": {
+        "count": 4,
+        "successful": 4,
+        "failures": 0,
+        "samples_ms": [
+          208.62579699996786,
+          170.78059100003884,
+          133.98130699988542,
+          186.43991299995832
+        ],
+        "mean_ms": 174.9569019999626,
+        "p50_ms": 178.61025199999858,
+        "calls": {
+          "embed": 4,
+          "rerank": 0,
+          "chat": 0
+        }
+      },
+      "latency_reduction_pct": 94.75003197853175,
+      "speed_ratio": 19.047735070209676,
+      "hits": 4
+    }
+  },
+  "C3_caveat": "套餐问题可能路由billing；仅说明缓存模块行为，排除出可用于简历的文档问答主统计。入口分类因限流均未实测。",
+  "probes": [
+    {
+      "label": "C1:paraphrase",
+      "status": "ok",
+      "cache_hit": false,
+      "best_similarity": 0.7883477024235598,
+      "cached_payload": null
+    },
+    {
+      "label": "C1:other_tenant",
+      "status": "ok",
+      "cache_hit": false,
+      "best_similarity": null,
+      "cached_payload": null
+    },
+    {
+      "label": "C1:unrelated",
+      "status": "ok",
+      "cache_hit": false,
+      "best_similarity": 0.43340652964709214,
+      "cached_payload": null
+    },
+    {
+      "label": "C2:paraphrase",
+      "status": "ok",
+      "cache_hit": false,
+      "best_similarity": 0.680873159758366,
+      "cached_payload": null
+    },
+    {
+      "label": "C2:other_tenant",
+      "status": "ok",
+      "cache_hit": false,
+      "best_similarity": null,
+      "cached_payload": null
+    },
+    {
+      "label": "C2:unrelated",
+      "status": "ok",
+      "cache_hit": false,
+      "best_similarity": 0.375352594081039,
+      "cached_payload": null
+    },
+    {
+      "label": "C3:paraphrase",
+      "status": "ok",
+      "cache_hit": false,
+      "best_similarity": 0.9014787916943136,
+      "cached_payload": null
+    },
+    {
+      "label": "C3:other_tenant",
+      "status": "ok",
+      "cache_hit": false,
+      "best_similarity": null,
+      "cached_payload": null
+    },
+    {
+      "label": "C3:unrelated",
+      "status": "ok",
+      "cache_hit": false,
+      "best_similarity": 0.4411971373772941,
+      "cached_payload": null
+    }
+  ],
+  "same_query_payload_preserved": [
+    {
+      "label": "C1:hit:1",
+      "equal": true
+    },
+    {
+      "label": "C1:hit:2",
+      "equal": true
+    },
+    {
+      "label": "C1:hit:3",
+      "equal": true
+    },
+    {
+      "label": "C1:hit:4",
+      "equal": true
+    },
+    {
+      "label": "C2:hit:1",
+      "equal": true
+    },
+    {
+      "label": "C2:hit:2",
+      "equal": true
+    },
+    {
+      "label": "C2:hit:3",
+      "equal": true
+    },
+    {
+      "label": "C2:hit:4",
+      "equal": true
+    },
+    {
+      "label": "C3:hit:1",
+      "equal": true
+    },
+    {
+      "label": "C3:hit:2",
+      "equal": true
+    },
+    {
+      "label": "C3:hit:3",
+      "equal": true
+    },
+    {
+      "label": "C3:hit:4",
+      "equal": true
+    }
+  ],
+  "unperformed_planned_probe": [
+    "similarity_threshold_boundary"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "dedicated_redis_stopped": true,
+  "existing_redis_untouched": true,
+  "index_access": "read only",
+  "session_and_business_database_writes": false
+}

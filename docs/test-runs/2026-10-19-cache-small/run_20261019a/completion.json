@@ -1,0 +1,10 @@
+{
+  "model_method_calls": 82,
+  "seeded_cases": [
+    "C1",
+    "C2",
+    "C3"
+  ],
+  "redis_keys": 15,
+  "status": "see individual stage records"
+}

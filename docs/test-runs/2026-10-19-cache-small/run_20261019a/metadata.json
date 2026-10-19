@@ -1,0 +1,23 @@
+{
+  "scope": "cache+RAG document-answer stage; excludes intent classification, supervisor persistence, HTTP/SSE",
+  "collection": "rag_small_20261019a",
+  "chunks": 32,
+  "redis": "dedicated ephemeral process",
+  "concurrency": 1,
+  "semantic_threshold": 0.95,
+  "semantic_max_entries": 200,
+  "application_and_openai_sdk_retries": 0,
+  "dashscope_retry": "may resend once on pooled connection drop",
+  "call_limit": 120,
+  "models": {
+    "embedding_model": "text-embedding-v3",
+    "llm_model_small": "qwen-turbo",
+    "llm_model_large": "qwen-plus",
+    "rerank_model": "gte-rerank-v2"
+  },
+  "source_hashes": {
+    "ai-py/app/cache/route_cache.py": "8af8f21c75591a899bcc2de8206c48796f6e4eda494f788b239b3a080cfdbaa3",
+    "ai-py/app/cache/semantic_cache.py": "7320f11264bdf6e214ce741ffd64d41227d82d589ed35d1b1895a0e3e102a675",
+    "ai-py/app/agents/supervisor.py": "eafecd280c6a5fe905b7d69234e581b7df5539587b5357d4195cbcd830e0ced7"
+  }
+}

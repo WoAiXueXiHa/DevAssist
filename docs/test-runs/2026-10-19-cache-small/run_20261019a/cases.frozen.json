@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "id": "C1",
+      "query": "回调失败重试几次，间隔是多少？",
+      "section": "回调重试策略",
+      "paraphrase": "Webhook 投递失败最多重试多少次？每次间隔多久？"
+    },
+    {
+      "id": "C2",
+      "query": "同一回调来了两次，怎样防止重复处理？",
+      "section": "回调重复",
+      "paraphrase": "重复收到 Webhook 时，应该用哪个字段做幂等去重？"
+    },
+    {
+      "id": "C3",
+      "query": "基础版和专业版 QPS、月配额各是多少？",
+      "section": "套餐档位",
+      "paraphrase": "基础套餐和专业套餐分别允许多少 QPS 和每月调用量？"
+    }
+  ],
+  "repetitions_per_case_per_group": 4,
+  "sources": [
+    {
+      "path": "data/knowledge/01-API 接入指南.md",
+      "sha256": "91ca70ca7337f9523a598e31c5c7f4b1a630dadbf98372b310b61e387f42cdbf"
+    },
+    {
+      "path": "data/knowledge/02- Webhook 回调机制.md",
+      "sha256": "ebf49166aabeb697843b2a4e761460526f7142647649f38594cb11945551b2da"
+    },
+    {
+      "path": "data/knowledge/03-套餐与计费规则.md",
+      "sha256": "f858ea6855056f878613cc34e79f3c4e9a64498a5cd22bd1f87bf9a3cce9736c"
+    },
+    {
+      "path": "data/knowledge/04-数据质量说明.md",
+      "sha256": "27913c93e1ef926ecc3a6447e1802cb7085677feb2d5f9765ea894615d67a97c"
+    },
+    {
+      "path": "data/knowledge/05-FAQ.md",
+      "sha256": "78f95c3b482944f9587ec210be2acd75cc12235752096a99039955974140027c"
+    }
+  ],
+  "extra_probes": [
+    "same_query",
+    "paraphrase",
+    "unrelated_query",
+    "other_tenant",
+    "similarity_threshold_boundary"
+  ],
+  "frozen_before_calls": true
+}
