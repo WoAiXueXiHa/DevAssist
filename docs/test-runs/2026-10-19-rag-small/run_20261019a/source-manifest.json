@@ -1,0 +1,15 @@
+{
+  "git_head": "f8d49f04a20d171d41ee7347595457bf42df4f63",
+  "source_sha256": {
+    "ai-py/app/rag/retriever.py": "26d97d22471501097105adea2c4412132ae44f4daf65456957fdf182e30ef34e",
+    "ai-py/app/rag/store.py": "7ba5cec9a4ebce2e93ee5d1cc0460ba8eddbc31c9bd8264fa52883ee7887ee33",
+    "ai-py/app/rag/reranker.py": "bd1f92b3a2b63ebc893160b0180b5ee4a58e9fd1173b6a45203eb760f6186f89",
+    "ai-py/app/rag/compressor.py": "75c3cc5cb73a8fc06bbf974dc4366ed68786fbb8a627960a02d441a78df7e0b2",
+    "ai-py/app/agents/doc_rag.py": "a59d59ff3d2181875701cfadd01378147d650bde5b405476f6679a510a577fbf",
+    "ai-py/app/agents/api_diagnostic.py": "85466ca3917ed56e16e7f47b4b7a3b999176d8c82ba9c08af296e6cd285454c3",
+    "ai-py/app/agents/intent_router.py": "b7a18f1dd9e9254fa1c63478828070291a27c5b3329be006c3ca3f9da82b7aff",
+    "ai-py/app/agents/supervisor.py": "eafecd280c6a5fe905b7d69234e581b7df5539587b5357d4195cbcd830e0ced7",
+    "backend-go/internal/api/chat.go": "361ccc02db18c34d2e787d45d02fddfea63cb44a23bba843296124cb1371648b"
+  },
+  "note": "测试期间未修改业务源码；知识目录在本轮前已有用户未提交修改，冻结源哈希见questions.frozen.json。"
+}

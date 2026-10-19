@@ -1,0 +1,27 @@
+{
+  "vector_dimensions": [
+    1024
+  ],
+  "questions_with_nonempty_two_rankings": 30,
+  "rerank_top5_records": 30,
+  "compress_called": 30,
+  "compress_reduced_records": [
+    {
+      "id": "Q19",
+      "before": 460,
+      "after": 265
+    },
+    {
+      "id": "Q26",
+      "before": 468,
+      "after": 384
+    },
+    {
+      "id": "Q29",
+      "before": 706,
+      "after": 72
+    }
+  ],
+  "citations_built": 30,
+  "no_hit_returns": []
+}

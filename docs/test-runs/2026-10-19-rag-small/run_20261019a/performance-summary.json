@@ -1,0 +1,202 @@
+{
+  "AUTH_KEY_EXPIRED": {
+    "rag": {
+      "samples_ms": [
+        3691.807198000106,
+        4620.692578999979,
+        3297.500694000064,
+        4501.449949000062
+      ],
+      "failures": 0,
+      "stages": [
+        "_rrf_fuse",
+        "build_context",
+        "chat",
+        "compress",
+        "embed",
+        "hybrid_search",
+        "rerank",
+        "rerank_candidates",
+        "search"
+      ],
+      "missing_basis": 0,
+      "mean_ms": 4027.8626050000526,
+      "p50_ms": 4096.628573500084
+    },
+    "fast": {
+      "samples_ms": [
+        4.113016000019343,
+        3.8622810000106256,
+        3.609461999985797,
+        3.4902980000879325
+      ],
+      "failures": 0,
+      "stages": [
+        "_error_doc_fast"
+      ],
+      "missing_basis": 0,
+      "mean_ms": 3.7687642500259244,
+      "p50_ms": 3.735871499998211
+    }
+  },
+  "DATA_EMPTY": {
+    "rag": {
+      "samples_ms": [
+        3805.140837999943,
+        4053.6703220000163,
+        3736.8351340001027,
+        3458.469796999907
+      ],
+      "failures": 0,
+      "stages": [
+        "_rrf_fuse",
+        "build_context",
+        "chat",
+        "compress",
+        "embed",
+        "hybrid_search",
+        "rerank",
+        "rerank_candidates",
+        "search"
+      ],
+      "missing_basis": 0,
+      "mean_ms": 3763.5290227499922,
+      "p50_ms": 3770.987986000023
+    },
+    "fast": {
+      "samples_ms": [
+        7.36764399994172,
+        5.138784999871859,
+        4.4084000001021195,
+        4.034267999941221
+      ],
+      "failures": 0,
+      "stages": [
+        "_error_doc_fast"
+      ],
+      "missing_basis": 0,
+      "mean_ms": 5.23727424996423,
+      "p50_ms": 4.773592499986989
+    }
+  },
+  "DATA_INCONSISTENT": {
+    "rag": {
+      "samples_ms": [
+        3928.9150800000243,
+        4042.3440360000313,
+        3951.5280350001376,
+        4078.1236590000844
+      ],
+      "failures": 0,
+      "stages": [
+        "_rrf_fuse",
+        "build_context",
+        "chat",
+        "compress",
+        "embed",
+        "hybrid_search",
+        "rerank",
+        "rerank_candidates",
+        "search"
+      ],
+      "missing_basis": 0,
+      "mean_ms": 4000.2277025000694,
+      "p50_ms": 3996.9360355000845
+    },
+    "fast": {
+      "samples_ms": [
+        8.730805999903168,
+        10.896336000087103,
+        10.042582000096445,
+        10.200420000046506
+      ],
+      "failures": 0,
+      "stages": [
+        "_error_doc_fast"
+      ],
+      "missing_basis": 0,
+      "mean_ms": 9.967536000033306,
+      "p50_ms": 10.121501000071476
+    }
+  },
+  "WEBHOOK_DELIVERY_FAILED": {
+    "rag": {
+      "samples_ms": [
+        5242.863815999954,
+        5242.335785999785,
+        5348.7761359999695,
+        5310.781978999785
+      ],
+      "failures": 0,
+      "stages": [
+        "_rrf_fuse",
+        "build_context",
+        "chat",
+        "compress",
+        "embed",
+        "hybrid_search",
+        "rerank",
+        "rerank_candidates",
+        "search"
+      ],
+      "missing_basis": 0,
+      "mean_ms": 5286.189429249873,
+      "p50_ms": 5276.822897499869
+    },
+    "fast": {
+      "samples_ms": [
+        4.0366190000895585,
+        3.7368900000274152,
+        3.6205009998866444,
+        3.594178999946962
+      ],
+      "failures": 0,
+      "stages": [
+        "_error_doc_fast"
+      ],
+      "missing_basis": 0,
+      "mean_ms": 3.747047249987645,
+      "p50_ms": 3.67869549995703
+    }
+  },
+  "WEBHOOK_SIGN_INVALID": {
+    "rag": {
+      "samples_ms": [
+        4444.182888000114,
+        4595.392792999974,
+        5072.803256999805,
+        5047.9313559999355
+      ],
+      "failures": 0,
+      "stages": [
+        "_rrf_fuse",
+        "build_context",
+        "chat",
+        "compress",
+        "embed",
+        "hybrid_search",
+        "rerank",
+        "rerank_candidates",
+        "search"
+      ],
+      "missing_basis": 0,
+      "mean_ms": 4790.077573499957,
+      "p50_ms": 4821.6620744999545
+    },
+    "fast": {
+      "samples_ms": [
+        4.375555000024178,
+        3.668122000135554,
+        3.559302999974534,
+        3.574372000002768
+      ],
+      "failures": 0,
+      "stages": [
+        "_error_doc_fast"
+      ],
+      "missing_basis": 0,
+      "mean_ms": 3.7943380000342586,
+      "p50_ms": 3.621247000069161
+    }
+  }
+}

@@ -1,0 +1,552 @@
+{
+  "version": 1,
+  "frozen_before_retrieval": true,
+  "scope": "当前五篇资料，25 道可答（含同义改写）+5 道不足；章节与必答事实由 Codex 按原文标注。",
+  "sources": [
+    {
+      "path": "data/knowledge/01-API 接入指南.md",
+      "sha256": "91ca70ca7337f9523a598e31c5c7f4b1a630dadbf98372b310b61e387f42cdbf"
+    },
+    {
+      "path": "data/knowledge/02- Webhook 回调机制.md",
+      "sha256": "ebf49166aabeb697843b2a4e761460526f7142647649f38594cb11945551b2da"
+    },
+    {
+      "path": "data/knowledge/03-套餐与计费规则.md",
+      "sha256": "f858ea6855056f878613cc34e79f3c4e9a64498a5cd22bd1f87bf9a3cce9736c"
+    },
+    {
+      "path": "data/knowledge/04-数据质量说明.md",
+      "sha256": "27913c93e1ef926ecc3a6447e1802cb7085677feb2d5f9765ea894615d67a97c"
+    },
+    {
+      "path": "data/knowledge/05-FAQ.md",
+      "sha256": "78f95c3b482944f9587ec210be2acd75cc12235752096a99039955974140027c"
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q01",
+      "answerable": true,
+      "query": "接入 API 的四步是什么？",
+      "relevant": [
+        {
+          "path": "data/knowledge/01-API 接入指南.md",
+          "doc_title": "API 接入指南",
+          "section": "接入流程概述",
+          "quote": "接入本平台 API 分为四步：注册账号、创建应用、获取 API Key、调用接口。完成后即可在生产环境调用实名认证、企业信息查询、风控评分等接口。"
+        }
+      ],
+      "required_facts": [
+        "注册账号",
+        "创建应用",
+        "获取 API Key",
+        "调用接口"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q02",
+      "answerable": true,
+      "query": "没完成企业实名能建生产应用吗？",
+      "relevant": [
+        {
+          "path": "data/knowledge/01-API 接入指南.md",
+          "doc_title": "API 接入指南",
+          "section": "第一步：注册与实名",
+          "quote": "在控制台注册企业账号并完成企业实名认证。实名通过后才能创建生产应用和获取正式 API Key。"
+        }
+      ],
+      "required_facts": [
+        "实名通过后才能创建生产应用和获取正式 API Key"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q03",
+      "answerable": true,
+      "query": "多个业务线怎样隔离应用和 Key？",
+      "relevant": [
+        {
+          "path": "data/knowledge/01-API 接入指南.md",
+          "doc_title": "API 接入指南",
+          "section": "第二步：创建应用",
+          "quote": "进入控制台「应用管理」，创建应用并选择需要开通的 API 产品。每个应用拥有独立的 API Key 与权限配置。一个企业可创建多个应用，用于区分不同业务线。"
+        }
+      ],
+      "required_facts": [
+        "一个企业可创建多个应用",
+        "每个应用拥有独立的 API Key 与权限配置"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q04",
+      "answerable": true,
+      "query": "Secret 丢了，能再查看吗？",
+      "relevant": [
+        {
+          "path": "data/knowledge/01-API 接入指南.md",
+          "doc_title": "API 接入指南",
+          "section": "第三步：获取 API Key",
+          "quote": "应用创建后，在应用详情页获取 API Key 与 Secret Key。API Key 用于标识调用方身份，Secret Key 用于请求签名，**Secret Key 仅在创建时展示一次，请妥善保存**。如遗失需重新生成。"
+        }
+      ],
+      "required_facts": [
+        "Secret Key 仅在创建时展示一次",
+        "遗失需重新生成"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q05",
+      "answerable": true,
+      "query": "接口用什么协议和方法，带哪些请求头？",
+      "relevant": [
+        {
+          "path": "data/knowledge/01-API 接入指南.md",
+          "doc_title": "API 接入指南",
+          "section": "第四步：调用接口",
+          "quote": "所有接口均通过 HTTPS POST 调用，请求需携带 API Key 并按《鉴权与签名》文档计算签名。基本请求结构：\n\n```\nPOST https://api.example.com/v1/idcard/verify\nHeaders:\n  X-Api-Key: 你的API Key\n  X-Timestamp: 当前秒级时间戳\n  X-Sign: 按规则计算的签名\nBody (JSON): 业务参数\n```"
+        }
+      ],
+      "required_facts": [
+        "HTTPS POST",
+        "X-Api-Key",
+        "X-Timestamp",
+        "X-Sign"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q06",
+      "answerable": true,
+      "query": "调用前需要检查哪些权限和额度？",
+      "relevant": [
+        {
+          "path": "data/knowledge/01-API 接入指南.md",
+          "doc_title": "API 接入指南",
+          "section": "调用前检查清单",
+          "quote": "- 应用已开通目标 API 产品（否则返回 PRODUCT_NOT_ENABLED）。\n- API Key 处于有效状态且未过期（否则返回 AUTH_KEY_EXPIRED）。\n- 服务器出口 IP 已加入白名单（如开启白名单，否则返回 IP_NOT_ALLOWED）。\n- 套餐有足够的调用量与余额。"
+        }
+      ],
+      "required_facts": [
+        "应用开通目标产品",
+        "Key 有效且未过期",
+        "开启白名单时出口 IP 已加入",
+        "配额与余额足够"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q07",
+      "answerable": true,
+      "query": "客户端超时和失败重试有什么建议？",
+      "relevant": [
+        {
+          "path": "data/knowledge/01-API 接入指南.md",
+          "doc_title": "API 接入指南",
+          "section": "环境与超时建议",
+          "quote": "建议客户端请求超时设置不低于 5 秒，并实现失败重试与指数退避。生产接入前建议先在测试用例中覆盖鉴权失败、参数错误、限流等异常分支。"
+        }
+      ],
+      "required_facts": [
+        "超时不低于 5 秒",
+        "失败重试与指数退避"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q08",
+      "answerable": true,
+      "query": "异步批量核验完成后如何推送结果？",
+      "relevant": [
+        {
+          "path": "data/knowledge/02- Webhook 回调机制.md",
+          "doc_title": "Webhook 回调",
+          "section": "回调机制",
+          "quote": "对于异步类接口（如批量核验、风控异步评分），平台在处理完成后通过 Webhook 主动向客户配置的回调地址推送结果。回调为 HTTPS POST，body 为 JSON，携带 `event_id`、业务结果与签名。"
+        }
+      ],
+      "required_facts": [
+        "Webhook HTTPS POST",
+        "JSON body",
+        "event_id、业务结果与签名"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q09",
+      "answerable": true,
+      "query": "接收回调的 URL 要满足哪些条件？",
+      "relevant": [
+        {
+          "path": "data/knowledge/02- Webhook 回调机制.md",
+          "doc_title": "Webhook 回调",
+          "section": "回调地址配置",
+          "quote": "在控制台「应用管理 - 回调配置」中设置回调 URL。回调地址必须公网可访问、支持 HTTPS，并能在 5 秒内返回 HTTP 200。"
+        }
+      ],
+      "required_facts": [
+        "公网可访问",
+        "支持 HTTPS",
+        "5 秒内返回 HTTP 200"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q10",
+      "answerable": true,
+      "query": "回调超时或服务返回 500 会怎样？",
+      "relevant": [
+        {
+          "path": "data/knowledge/02- Webhook 回调机制.md",
+          "doc_title": "Webhook 回调",
+          "section": "回调成功的判定",
+          "quote": "客户服务端收到回调后，**必须返回 HTTP 200** 表示已接收。返回非 2xx、超时或不可达，平台均视为投递失败（WEBHOOK_DELIVERY_FAILED）。"
+        }
+      ],
+      "required_facts": [
+        "投递失败",
+        "WEBHOOK_DELIVERY_FAILED",
+        "必须返回 HTTP 200"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q11",
+      "answerable": true,
+      "query": "回调失败重试几次，间隔是多少？",
+      "relevant": [
+        {
+          "path": "data/knowledge/02- Webhook 回调机制.md",
+          "doc_title": "Webhook 回调",
+          "section": "回调重试策略",
+          "quote": "投递失败后，平台按指数退避自动重试，最多重试 6 次，间隔依次约为 1 分钟、5 分钟、30 分钟、2 小时、6 小时、12 小时。超过最大重试次数后停止，可在控制台手动触发补发。"
+        }
+      ],
+      "required_facts": [
+        "最多重试 6 次",
+        "1 分钟、5 分钟、30 分钟、2 小时、6 小时、12 小时",
+        "超过最大次数停止，可手动补发"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q12",
+      "answerable": true,
+      "query": "Webhook 收不到，应该按什么顺序查？",
+      "relevant": [
+        {
+          "path": "data/knowledge/02- Webhook 回调机制.md",
+          "doc_title": "Webhook 回调",
+          "section": "回调收不到的排查",
+          "quote": "1. 确认回调地址在控制台已正确配置且回调功能已启用。\n2. 确认回调地址公网可达（可用 curl 从外网测试），未被防火墙/安全组拦截。\n3. 查看投递记录：若显示客户返回 500 或超时，说明平台已发送但客户服务处理失败。\n4. 区分四种情况：平台未发送、客户未接收、客户返回错误、验签失败。"
+        }
+      ],
+      "required_facts": [
+        "配置且启用",
+        "公网可达且未被拦截",
+        "查看投递记录",
+        "区分未发送、未接收、返回错误、验签失败"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q13",
+      "answerable": true,
+      "query": "回调验签总失败，body 能先转 JSON 再拼接吗？",
+      "relevant": [
+        {
+          "path": "data/knowledge/02- Webhook 回调机制.md",
+          "doc_title": "Webhook 回调",
+          "section": "回调验签（WEBHOOK_SIGN_INVALID）",
+          "quote": "回调 body 携带签名，客户需使用回调密钥按文档验签，确认回调来自平台。验签失败常见于：使用了错误的密钥、对原始 body 做了改写或重新序列化导致字节不一致。建议对**原始请求体**验签，不要先反序列化再重新拼接。"
+        }
+      ],
+      "required_facts": [
+        "使用正确回调密钥",
+        "原始请求体验签",
+        "重新序列化可能导致字节不一致"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q14",
+      "answerable": true,
+      "query": "同一回调来了两次，怎样防止重复处理？",
+      "relevant": [
+        {
+          "path": "data/knowledge/02- Webhook 回调机制.md",
+          "doc_title": "Webhook 回调",
+          "section": "回调重复",
+          "quote": "由于重试机制，客户可能收到重复回调。请使用 `event_id` 做幂等去重，确保同一事件只处理一次。"
+        }
+      ],
+      "required_facts": [
+        "event_id 幂等去重",
+        "同一事件只处理一次"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q15",
+      "answerable": true,
+      "query": "基础版和专业版 QPS、月配额各是多少？",
+      "relevant": [
+        {
+          "path": "data/knowledge/03-套餐与计费规则.md",
+          "doc_title": "套餐与计费规则",
+          "section": "套餐档位",
+          "quote": "| 套餐 | QPS | 月配额 | 单价(元/次) | 超额单价(元/次) |\n| --- | --- | --- | --- | --- |\n| 免费版 | 5 | 10,000 | 0.010 | 0.020 |\n| 基础版 | 20 | 100,000 | 0.008 | 0.015 |\n| 专业版 | 50 | 500,000 | 0.006 | 0.012 |\n| 企业版 | 200 | 2,000,000 | 0.004 | 0.008 |"
+        }
+      ],
+      "required_facts": [
+        "基础版 20 QPS、100000 月配额",
+        "专业版 50 QPS、500000 月配额"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q16",
+      "answerable": true,
+      "query": "月调用量超额时，账单怎么算？",
+      "relevant": [
+        {
+          "path": "data/knowledge/03-套餐与计费规则.md",
+          "doc_title": "套餐与计费规则",
+          "section": "计费方式",
+          "quote": "按成功调用次数计费（返回业务失败但请求成功的调用是否计费以接口说明为准）。月度费用由两部分构成：\n\n- **基础费用** = min(本月调用量, 月配额) × 单价。\n- **超额费用** = max(0, 本月调用量 − 月配额) × 超额单价。\n\n月度账单金额 = 基础费用 + 超额费用。"
+        }
+      ],
+      "required_facts": [
+        "基础费用=min(调用量,配额)×单价",
+        "超额费用=max(0,调用量−配额)×超额单价",
+        "账单为两者之和"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q17",
+      "answerable": true,
+      "query": "本月账单涨了，先从哪些方向排查？",
+      "relevant": [
+        {
+          "path": "data/knowledge/03-套餐与计费规则.md",
+          "doc_title": "套餐与计费规则",
+          "section": "账单为什么会上涨",
+          "quote": "费用上涨通常由以下原因之一导致：\n\n1. **调用量增长**：本月调用次数比上月明显增加，基础费用随之上升。\n2. **产生超额**：本月调用量超过套餐配额，超出部分按更高的超额单价计费。\n3. **套餐变更**：套餐升级或单价调整。\n\n排查时可对比本月与上月调用量，并查看账单的费用构成（基础费用 vs 超额费用）。若超额占比高，升级到更高配额的套餐通常更划算。"
+        }
+      ],
+      "required_facts": [
+        "调用量增长",
+        "产生超额",
+        "套餐变更",
+        "对比月调用量与基础/超额构成"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q18",
+      "answerable": true,
+      "query": "我在哪查看剩余配额、调用量和 QPS 上限？",
+      "relevant": [
+        {
+          "path": "data/knowledge/03-套餐与计费规则.md",
+          "doc_title": "套餐与计费规则",
+          "section": "调用量与余量查询",
+          "quote": "在控制台「用量统计」可查看本月调用量、剩余配额、QPS 上限。也可通过技术支持助手查询当前套餐、剩余调用量、当月调用量与账单构成。"
+        }
+      ],
+      "required_facts": [
+        "控制台用量统计",
+        "也可询问技术支持助手"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q19",
+      "answerable": true,
+      "query": "发票从哪里申请，助手能直接退款吗？",
+      "relevant": [
+        {
+          "path": "data/knowledge/03-套餐与计费规则.md",
+          "doc_title": "套餐与计费规则",
+          "section": "发票",
+          "quote": "费用结算后可在「财务 - 发票管理」申请发票。发票、合同、退款、改价等商务操作由商务团队处理，技术支持助手不直接执行，会为你转交人工。"
+        }
+      ],
+      "required_facts": [
+        "结算后财务-发票管理申请",
+        "退款由商务团队处理",
+        "助手转人工"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q20",
+      "answerable": true,
+      "query": "企业工商和实名数据更新有何不同，哪里看时间？",
+      "relevant": [
+        {
+          "path": "data/knowledge/04-数据质量说明.md",
+          "doc_title": "数据质量说明",
+          "section": "数据来源与更新",
+          "quote": "平台数据来自权威数据源并定期更新。不同接口的数据更新周期不同：企业工商信息通常 T+1 更新，实名核验为实时比对。返回结果中的 `data_time` 字段标识数据的更新时间。"
+        }
+      ],
+      "required_facts": [
+        "企业工商通常 T+1",
+        "实名实时比对",
+        "data_time 标识更新时间"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q21",
+      "answerable": true,
+      "query": "DATA_EMPTY 的原因和排查顺序？",
+      "relevant": [
+        {
+          "path": "data/knowledge/04-数据质量说明.md",
+          "doc_title": "数据质量说明",
+          "section": "返回为空（DATA_EMPTY）",
+          "quote": "请求成功但返回数据为空，可能原因：\n\n1. **参数不匹配**：查询关键字段（如企业名称、证件号）拼写或格式有误。\n2. **数据未覆盖**：目标数据不在当前覆盖范围内（如部分地区、新成立主体）。\n3. **权限或产品范围**：所开通产品不包含该类数据。\n\n排查：先核对查询参数，再确认数据覆盖范围。若确认应有数据却返回空，请提交数据质量工单并附上 request_id 与期望结果。"
+        }
+      ],
+      "required_facts": [
+        "参数不匹配",
+        "数据未覆盖",
+        "权限或产品范围",
+        "先核对参数再确认覆盖",
+        "工单附 request_id 与期望结果"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q22",
+      "answerable": true,
+      "query": "返回数据和官网不同，该准备什么材料？",
+      "relevant": [
+        {
+          "path": "data/knowledge/04-数据质量说明.md",
+          "doc_title": "数据质量说明",
+          "section": "数据不一致（DATA_INCONSISTENT）",
+          "quote": "返回数据与客户预期（如官网、其它来源）不一致，常见原因是数据更新存在时间差。处理：\n\n1. 查看返回的 `data_time`，确认是否为更新延迟。\n2. 提供对比样例（查询参数、平台返回、期望值、来源）。\n3. 提交数据质量工单，由数据团队核查。"
+        }
+      ],
+      "required_facts": [
+        "查看 data_time 排查时间差",
+        "查询参数、平台返回、期望值、来源",
+        "提交数据质量工单"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q23",
+      "answerable": true,
+      "query": "平台保证返回数据绝对准确吗？",
+      "relevant": [
+        {
+          "path": "data/knowledge/04-数据质量说明.md",
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "quote": "平台不对数据的绝对准确性做承诺，数据以来源方与更新时间为准。涉及数据质量争议时，请通过工单提交可复现的样例，便于数据团队定位。"
+        }
+      ],
+      "required_facts": [
+        "不承诺绝对准确",
+        "以来源方与更新时间为准",
+        "争议提交可复现样例工单"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q24",
+      "answerable": true,
+      "query": "回调重试造成重复扣业务动作怎么办？",
+      "relevant": [
+        {
+          "path": "data/knowledge/02- Webhook 回调机制.md",
+          "doc_title": "Webhook 回调",
+          "section": "回调重复",
+          "quote": "由于重试机制，客户可能收到重复回调。请使用 `event_id` 做幂等去重，确保同一事件只处理一次。"
+        }
+      ],
+      "required_facts": [
+        "event_id 幂等去重",
+        "同一事件只处理一次"
+      ],
+      "paraphrase_of": "Q14"
+    },
+    {
+      "id": "Q25",
+      "answerable": true,
+      "query": "401 要怎么确认是过期还是签名错误？",
+      "relevant": [
+        {
+          "path": "data/knowledge/05-FAQ.md",
+          "doc_title": "常见问题 FAQ",
+          "section": "接口返回 401 怎么办？",
+          "quote": "401 表示鉴权失败。先用 request_id 查调用日志确认错误码：AUTH_KEY_EXPIRED 为 Key 过期（重新生成 Key），SIGN_INVALID 为签名错误（检查参数排序、Secret、时间戳）。详见《鉴权与签名》。"
+        }
+      ],
+      "required_facts": [
+        "用 request_id 查日志",
+        "AUTH_KEY_EXPIRED 重新生成 Key",
+        "SIGN_INVALID 检查参数排序、Secret、时间戳"
+      ],
+      "paraphrase_of": null
+    },
+    {
+      "id": "Q26",
+      "answerable": false,
+      "query": "新加坡数据中心的固定出口 IP 是多少？",
+      "relevant": [],
+      "required_facts": [
+        "明确说明资料不足，不提供未有依据的具体值"
+      ],
+      "insufficiency_reason": "当前五篇资料无机房出口 IP"
+    },
+    {
+      "id": "Q27",
+      "answerable": false,
+      "query": "Webhook 回调密钥每隔多少天强制轮换？",
+      "relevant": [],
+      "required_facts": [
+        "明确说明资料不足，不提供未有依据的具体值"
+      ],
+      "insufficiency_reason": "当前资料没有轮换周期"
+    },
+    {
+      "id": "Q28",
+      "answerable": false,
+      "query": "企业版是否保证 99.99% SLA，并如何赔偿？",
+      "relevant": [],
+      "required_facts": [
+        "明确说明资料不足，不提供未有依据的具体值"
+      ],
+      "insufficiency_reason": "当前资料没有 SLA 或赔偿合同"
+    },
+    {
+      "id": "Q29",
+      "answerable": false,
+      "query": "请给出 Java SDK 官方 Maven 坐标和最新版本。",
+      "relevant": [],
+      "required_facts": [
+        "明确说明资料不足，不提供未有依据的具体值"
+      ],
+      "insufficiency_reason": "当前资料没有 SDK 坐标或版本"
+    },
+    {
+      "id": "Q30",
+      "answerable": false,
+      "query": "数据质量工单承诺几小时解决？",
+      "relevant": [],
+      "required_facts": [
+        "明确说明资料不足，不提供未有依据的具体值"
+      ],
+      "insufficiency_reason": "当前资料没有处理时限"
+    }
+  ]
+}

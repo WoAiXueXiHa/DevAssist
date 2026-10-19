@@ -1,0 +1,66 @@
+[
+  {
+    "code": "AUTH_KEY_EXPIRED",
+    "name": "API Key 已过期",
+    "cause": "请求使用的 API Key 已超过有效期。",
+    "fix_steps": "1. 登录控制台查看 Key 状态与过期时间；2. 重新生成 API Key；3. 更新服务端配置后重试。",
+    "document_sources": [
+      {
+        "path": "data/knowledge/01-API 接入指南.md",
+        "sha256": "91ca70ca7337f9523a598e31c5c7f4b1a630dadbf98372b310b61e387f42cdbf"
+      },
+      {
+        "path": "data/knowledge/05-FAQ.md",
+        "sha256": "78f95c3b482944f9587ec210be2acd75cc12235752096a99039955974140027c"
+      }
+    ]
+  },
+  {
+    "code": "DATA_EMPTY",
+    "name": "查询结果为空",
+    "cause": "请求成功但未命中数据，可能为参数不匹配或数据未覆盖。",
+    "fix_steps": "1. 核对查询参数；2. 确认数据覆盖范围；3. 如确认应有数据请提数据质量工单。",
+    "document_sources": [
+      {
+        "path": "data/knowledge/04-数据质量说明.md",
+        "sha256": "27913c93e1ef926ecc3a6447e1802cb7085677feb2d5f9765ea894615d67a97c"
+      }
+    ]
+  },
+  {
+    "code": "DATA_INCONSISTENT",
+    "name": "数据不一致",
+    "cause": "返回数据与预期来源存在差异，可能为更新延迟。",
+    "fix_steps": "1. 查看数据更新时间；2. 提供对比样例提数据质量工单。",
+    "document_sources": [
+      {
+        "path": "data/knowledge/04-数据质量说明.md",
+        "sha256": "27913c93e1ef926ecc3a6447e1802cb7085677feb2d5f9765ea894615d67a97c"
+      }
+    ]
+  },
+  {
+    "code": "WEBHOOK_DELIVERY_FAILED",
+    "name": "回调投递失败",
+    "cause": "平台已发送回调但客户地址返回非 2xx 或不可达。",
+    "fix_steps": "1. 确认回调地址可公网访问；2. 返回 200 表示已接收；3. 平台会按策略重试。",
+    "document_sources": [
+      {
+        "path": "data/knowledge/02- Webhook 回调机制.md",
+        "sha256": "ebf49166aabeb697843b2a4e761460526f7142647649f38594cb11945551b2da"
+      }
+    ]
+  },
+  {
+    "code": "WEBHOOK_SIGN_INVALID",
+    "name": "回调验签失败",
+    "cause": "客户侧对回调验签失败。",
+    "fix_steps": "1. 使用回调密钥按文档验签；2. 注意原始 body 不要被改写。",
+    "document_sources": [
+      {
+        "path": "data/knowledge/02- Webhook 回调机制.md",
+        "sha256": "ebf49166aabeb697843b2a4e761460526f7142647649f38594cb11945551b2da"
+      }
+    ]
+  }
+]

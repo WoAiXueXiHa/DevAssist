@@ -1,0 +1,7 @@
+{
+  "database": "rag_entry_04916c7f46",
+  "original_database_read_only": "devsupport",
+  "cache_bypass": true,
+  "temporary_db_removed": true,
+  "blocked": "intent model rate limit"
+}

@@ -1,0 +1,176 @@
+{
+  "reviewer": "Codex",
+  "independent_human_review": false,
+  "rubric": "逐题按冻结必答事实复核，允许语义改写；遗漏必答事实、与原文矛盾、捏造平台页面/字段/行为/政策即失败。普通实现建议和明确标注的例子不视为平台承诺。引用须包含支持核心结论的章节。资料不足题须明确不足且不捏造具体答案或平台处理流程。评分规则在本轮 Codex 复核时整理，并非事先注册的独立盲评。",
+  "reviews": [
+    {
+      "id": "Q01",
+      "pass": true,
+      "reason": "四步完整，顺序与原文一致。"
+    },
+    {
+      "id": "Q02",
+      "pass": false,
+      "reason": "正确说明生产应用需实名；没有覆盖标注中的正式 Key 前提，且声称未实名无法进入应用管理页面，原文只限制创建生产应用，没有页面访问限制依据。",
+      "missing_fact_indices": [
+        0
+      ]
+    },
+    {
+      "id": "Q03",
+      "pass": true,
+      "reason": "分别创建应用、独立 Key 与权限配置均覆盖，业务线隔离建议符合原文。"
+    },
+    {
+      "id": "Q04",
+      "pass": false,
+      "reason": "仅展示一次及遗失重新生成均答对；补充了具体按钮和旧 Secret 立即失效规则，原文没有这些依据。"
+    },
+    {
+      "id": "Q05",
+      "pass": true,
+      "reason": "HTTPS POST 及三个请求头全部正确；示例时间戳明确作为例子。"
+    },
+    {
+      "id": "Q06",
+      "pass": false,
+      "reason": "四项检查齐全，但把账户余额也定位为可在用量统计查询；原文该页只列调用量、余量、QPS，缺少余额查询位置依据。"
+    },
+    {
+      "id": "Q07",
+      "pass": true,
+      "reason": "不低于5秒、失败重试和指数退避齐全；1s/2s/4s作为客户端策略示例，不冒充平台固定规则。"
+    },
+    {
+      "id": "Q08",
+      "pass": true,
+      "reason": "异步完成后Webhook HTTPS POST、JSON及event_id/业务结果/签名齐全。"
+    },
+    {
+      "id": "Q09",
+      "pass": true,
+      "reason": "公网、HTTPS、5秒内HTTP200齐全；答案含未成功解析的JSON文本，单独记录格式缺陷，不改变事实评分。",
+      "format_issue": true
+    },
+    {
+      "id": "Q10",
+      "pass": false,
+      "reason": "投递失败错误码和HTTP200判定正确，但声称不会重试，与同一知识库的回调重试策略明确冲突。"
+    },
+    {
+      "id": "Q11",
+      "pass": true,
+      "reason": "6次、全部6个间隔、停止自动重试和控制台手动补发完整。"
+    },
+    {
+      "id": "Q12",
+      "pass": true,
+      "reason": "配置启用、公网可达、投递记录和四种失败情况完整。"
+    },
+    {
+      "id": "Q13",
+      "pass": false,
+      "reason": "原始body、正确密钥、重新序列化改变字节均覆盖；又给出回调可在请求头X-Sign中取签名的流程，原文只写回调body携带签名，混入API调用请求头，缺少依据。"
+    },
+    {
+      "id": "Q14",
+      "pass": true,
+      "reason": "event_id幂等去重和一次处理齐全；Redis/数据库是客户侧可选实现建议。"
+    },
+    {
+      "id": "Q15",
+      "pass": true,
+      "reason": "基础版20/100000及专业版50/500000全部正确。"
+    },
+    {
+      "id": "Q16",
+      "pass": true,
+      "reason": "基础/超额公式及总和齐全；超额场景的结论公式正确。"
+    },
+    {
+      "id": "Q17",
+      "pass": true,
+      "reason": "调用量增长、超额、套餐变更及账单构成对比齐全。"
+    },
+    {
+      "id": "Q18",
+      "pass": true,
+      "reason": "用量统计和技术支持两种途径齐全，补充应用标识为查询建议。"
+    },
+    {
+      "id": "Q19",
+      "pass": false,
+      "reason": "发票入口及退款商务转交正确，但遗漏冻结必答事实中的结算后申请这一时机条件。",
+      "missing_fact_indices": [
+        0
+      ]
+    },
+    {
+      "id": "Q20",
+      "pass": true,
+      "reason": "工商通常T+1、实名实时比对和data_time齐全。"
+    },
+    {
+      "id": "Q21",
+      "pass": true,
+      "reason": "三个原因、参数到覆盖的排查顺序、工单及request_id和期望结果齐全。"
+    },
+    {
+      "id": "Q22",
+      "pass": true,
+      "reason": "data_time时间差、查询参数/平台返回/期望值/来源及工单完整。"
+    },
+    {
+      "id": "Q23",
+      "pass": true,
+      "reason": "不绝对保证准确、来源与时间边界、可复现工单样例完整。"
+    },
+    {
+      "id": "Q24",
+      "pass": true,
+      "reason": "同义改写题仍正确给出event_id幂等一次处理；客户数据库/缓存建议不视为平台事实。"
+    },
+    {
+      "id": "Q25",
+      "pass": true,
+      "reason": "request_id查日志、过期重新生成、签名检查三个要点完整。"
+    },
+    {
+      "id": "Q26",
+      "pass": false,
+      "correct_refusal": false,
+      "verbal_abstention": true,
+      "reason": "明确说资料无固定出口IP，也未编造IP；但随后捏造可在应用管理/安全设置查看出口IP配置的产品流程。严格拒答判失败。"
+    },
+    {
+      "id": "Q27",
+      "pass": true,
+      "correct_refusal": true,
+      "verbal_abstention": true,
+      "reason": "明确资料未覆盖密钥轮换周期，没有给出天数或平台规则。"
+    },
+    {
+      "id": "Q28",
+      "pass": true,
+      "correct_refusal": true,
+      "verbal_abstention": true,
+      "reason": "明确无法确认99.99%SLA及赔偿，指向正式合同/商务，未编造承诺。"
+    },
+    {
+      "id": "Q29",
+      "pass": true,
+      "correct_refusal": true,
+      "verbal_abstention": true,
+      "reason": "直接说明资料缺失，未编造SDK坐标和版本。"
+    },
+    {
+      "id": "Q30",
+      "pass": false,
+      "correct_refusal": false,
+      "verbal_abstention": true,
+      "reason": "明确资料没有解决时限，未报小时数；但新增数据团队按复杂度和优先级处理且时长以工单系统反馈为准的政策，现有资料没有依据，严格拒答判失败。"
+    }
+  ],
+  "reviewed_run": "20261019a",
+  "reviewed_quality_sha256": "47bcbe54d541bc18c054bd9e823664db47dbf80f1b63deb5072e5742025f408b"
+}

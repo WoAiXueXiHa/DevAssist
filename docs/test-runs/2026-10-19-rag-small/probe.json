@@ -1,0 +1,30 @@
+{
+  "models": {
+    "embedding": "text-embedding-v3",
+    "rerank": "gte-rerank-v2",
+    "generation": "qwen-plus"
+  },
+  "attempts_per_stage": 1,
+  "stages": [
+    {
+      "stage": "embedding",
+      "status": "ok",
+      "dimension": 1024
+    },
+    {
+      "stage": "rerank",
+      "status": "ok",
+      "output": [
+        {
+          "index": 0,
+          "score": 0.15671453128987647
+        }
+      ]
+    },
+    {
+      "stage": "generation",
+      "status": "ok",
+      "output": "收到"
+    }
+  ]
+}

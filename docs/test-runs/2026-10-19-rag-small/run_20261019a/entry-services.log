@@ -1,0 +1,50 @@
+57524:C 19 Oct 2026 12:34:45.213 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+57524:C 19 Oct 2026 12:34:45.214 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+57524:C 19 Oct 2026 12:34:45.214 * Redis version=8.0.5, bits=64, commit=00000000, modified=0, pid=57524, just started
+57524:C 19 Oct 2026 12:34:45.214 * Configuration loaded
+57524:M 19 Oct 2026 12:34:45.214 * monotonic clock: POSIX clock_gettime
+57524:M 19 Oct 2026 12:34:45.216 * Running mode=standalone, port=35107.
+57524:M 19 Oct 2026 12:34:45.223 * Server initialized
+57524:M 19 Oct 2026 12:34:45.224 * Ready to accept connections tcp
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /health                   --> devsupport/backend-go/internal/api.(*Server).Router.func2 (3 handlers)
+[GIN-debug] GET    /api/health               --> devsupport/backend-go/internal/api.(*Server).Router.func2 (3 handlers)
+[GIN-debug] POST   /api/auth/login           --> devsupport/backend-go/internal/api.(*Server).login-fm (3 handlers)
+[GIN-debug] GET    /api/auth/me              --> devsupport/backend-go/internal/api.(*Server).me-fm (4 handlers)
+[GIN-debug] POST   /api/chat                 --> devsupport/backend-go/internal/api.(*Server).chat-fm (4 handlers)
+[GIN-debug] GET    /api/conversations        --> devsupport/backend-go/internal/api.(*Server).conversations-fm (4 handlers)
+[GIN-debug] GET    /api/conversations/:id    --> devsupport/backend-go/internal/api.(*Server).conversation-fm (4 handlers)
+[GIN-debug] POST   /api/conversations/:id/messages --> devsupport/backend-go/internal/api.(*Server).addMessage-fm (4 handlers)
+[GIN-debug] GET    /api/tickets              --> devsupport/backend-go/internal/api.(*Server).tickets-fm (4 handlers)
+[GIN-debug] GET    /api/tickets/:id          --> devsupport/backend-go/internal/api.(*Server).ticket-fm (4 handlers)
+[GIN-debug] POST   /api/feedback             --> devsupport/backend-go/internal/api.(*Server).feedback-fm (4 handlers)
+[GIN-debug] GET    /api/docs                 --> devsupport/backend-go/internal/api.(*Server).docs-fm (4 handlers)
+[GIN-debug] GET    /api/docs/:id             --> devsupport/backend-go/internal/api.(*Server).doc-fm (4 handlers)
+[GIN-debug] GET    /api/workbench/tickets    --> devsupport/backend-go/internal/api.(*Server).workbenchTickets-fm (5 handlers)
+[GIN-debug] GET    /api/workbench/tickets/:id --> devsupport/backend-go/internal/api.(*Server).workbenchTicket-fm (5 handlers)
+[GIN-debug] POST   /api/workbench/tickets/:id --> devsupport/backend-go/internal/api.(*Server).updateTicket-fm (5 handlers)
+[GIN-debug] GET    /api/workbench/conversations/:id/suggest_reply --> devsupport/backend-go/internal/api.(*Server).suggest-fm (5 handlers)
+[GIN-debug] POST   /api/workbench/conversations/:id/reply --> devsupport/backend-go/internal/api.(*Server).reply-fm (5 handlers)
+[GIN-debug] POST   /api/workbench/conversations/:id/takeover --> devsupport/backend-go/internal/api.(*Server).takeover-fm (5 handlers)
+[GIN-debug] GET    /api/traces               --> devsupport/backend-go/internal/api.(*Server).traces-fm (5 handlers)
+[GIN-debug] GET    /api/traces/:id           --> devsupport/backend-go/internal/api.(*Server).trace-fm (5 handlers)
+[GIN-debug] GET    /api/metrics              --> devsupport/backend-go/internal/api.(*Server).metrics-fm (5 handlers)
+[GIN-debug] POST   /api/eval/run             --> devsupport/backend-go/internal/api.(*Server).eval-fm (5 handlers)
+[GIN-debug] POST   /internal/tools/execute   --> devsupport/backend-go/internal/api.(*Server).tool-fm (4 handlers)
+2026/10/19 12:34:45 Go 业务后端启动于 127.0.0.1:43633
+INFO:     Started server process [57525]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:44845 (Press CTRL+C to quit)
+INFO:     127.0.0.1:36470 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36486 - "POST /internal/ai/run HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [57525]
+57524:signal-handler (1792384488) Received SIGTERM scheduling shutdown...
+57524:M 19 Oct 2026 12:34:48.642 * User requested shutdown...
+57524:M 19 Oct 2026 12:34:48.642 # Redis is now ready to exit, bye bye...

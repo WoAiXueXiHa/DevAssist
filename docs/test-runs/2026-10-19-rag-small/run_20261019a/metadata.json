@@ -1,0 +1,111 @@
+{
+  "run_id": "20261019a",
+  "questions_sha256": "95efe4170be171186ccddaaaae434f0346dca35fbc7d419ef04fb6ff88bb0e49",
+  "collection": "rag_small_20261019a",
+  "cache": "doc_rag.answer direct; no answer/route/session cache",
+  "database": "existing error_code read only; no changes",
+  "concurrency": 1,
+  "retries": 0,
+  "timeout_seconds": 60,
+  "models": {
+    "embedding_model": "text-embedding-v3",
+    "embedding_dim": 1024,
+    "rerank_model": "gte-rerank-v2",
+    "llm_model_small": "qwen-turbo",
+    "llm_model_large": "qwen-plus"
+  },
+  "schema": {
+    "collection_name": "rag_small_20261019a",
+    "auto_id": true,
+    "num_shards": 1,
+    "description": "",
+    "fields": [
+      {
+        "field_id": 100,
+        "name": "pk",
+        "description": "",
+        "type": 5,
+        "params": {},
+        "auto_id": true,
+        "is_primary": true
+      },
+      {
+        "field_id": 101,
+        "name": "embedding",
+        "description": "",
+        "type": 101,
+        "params": {
+          "dim": 1024
+        }
+      },
+      {
+        "field_id": 102,
+        "name": "content",
+        "description": "",
+        "type": 21,
+        "params": {
+          "max_length": 4000
+        }
+      },
+      {
+        "field_id": 103,
+        "name": "doc_title",
+        "description": "",
+        "type": 21,
+        "params": {
+          "max_length": 256
+        }
+      },
+      {
+        "field_id": 104,
+        "name": "section",
+        "description": "",
+        "type": 21,
+        "params": {
+          "max_length": 256
+        }
+      },
+      {
+        "field_id": 105,
+        "name": "category",
+        "description": "",
+        "type": 21,
+        "params": {
+          "max_length": 64
+        }
+      },
+      {
+        "field_id": 106,
+        "name": "error_code",
+        "description": "",
+        "type": 21,
+        "params": {
+          "max_length": 64
+        }
+      },
+      {
+        "field_id": 107,
+        "name": "version",
+        "description": "",
+        "type": 21,
+        "params": {
+          "max_length": 32
+        }
+      }
+    ],
+    "functions": [],
+    "aliases": [],
+    "collection_id": 469862424255143481,
+    "consistency_level": 2,
+    "consistency_level_name": "Bounded",
+    "properties": {},
+    "num_partitions": 1,
+    "enable_dynamic_field": false,
+    "enable_namespace": false,
+    "schema_version": 0,
+    "created_timestamp": 469862768856793094
+  },
+  "chunks": 32,
+  "provider_calls": 170,
+  "quality_circuit_open": false
+}

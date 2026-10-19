@@ -1,0 +1,29 @@
+{
+  "total_frozen": 30,
+  "completed": 30,
+  "answerable": 25,
+  "evidence_hit_at_5": {
+    "numerator": 25,
+    "denominator": 25
+  },
+  "rrf_hit_at_5": {
+    "numerator": 25,
+    "denominator": 25
+  },
+  "answer_pass": {
+    "numerator": 19,
+    "denominator": 25
+  },
+  "all_question_pass": {
+    "numerator": 22,
+    "denominator": 30
+  },
+  "correct_refusal": {
+    "numerator": 3,
+    "denominator": 5
+  },
+  "verbal_abstention": 5,
+  "format_issues": [
+    "Q09"
+  ]
+}

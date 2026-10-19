@@ -1,0 +1,1914 @@
+{
+  "reviewer": "Codex",
+  "independent_human_review": false,
+  "rubric": "逐题按冻结必答事实复核，允许语义改写；遗漏必答事实、与原文矛盾、捏造平台页面/字段/行为/政策即失败。普通实现建议和明确标注的例子不视为平台承诺。引用须包含支持核心结论的章节。资料不足题须明确不足且不捏造具体答案或平台处理流程。评分规则在本轮 Codex 复核时整理，并非事先注册的独立盲评。",
+  "questions": [
+    {
+      "id": "Q01",
+      "query": "接入 API 的四步是什么？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：接入 API 的四步是：注册账号、创建应用、获取 API Key、调用接口。\n\n**建议步骤**：\n1. 1. 注册账号：在控制台注册企业账号并完成企业实名认证；\n2. 2. 创建应用：进入「应用管理」创建应用，选择需开通的 API 产品；\n3. 3. 获取 API Key：在应用详情页获取 API Key 与 Secret Key（Secret Key 仅展示一次）；\n4. 4. 调用接口：通过 HTTPS POST 调用，携带 API Key、时间戳和按规则计算的签名。",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "API 接入指南",
+          "section": "接入流程概述",
+          "version": "v1",
+          "score": 0.933
+        },
+        {
+          "index": 2,
+          "doc_title": "API 接入指南",
+          "section": "第四步：调用接口",
+          "version": "v1",
+          "score": 0.279
+        },
+        {
+          "index": 3,
+          "doc_title": "API 接入指南",
+          "section": "第二步：创建应用",
+          "version": "v1",
+          "score": 0.191
+        },
+        {
+          "index": 4,
+          "doc_title": "API 接入指南",
+          "section": "第三步：获取 API Key",
+          "version": "v1",
+          "score": 0.19
+        },
+        {
+          "index": 5,
+          "doc_title": "API 接入指南",
+          "section": "第一步：注册与实名",
+          "version": "v1",
+          "score": 0.19
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q01",
+        "pass": true,
+        "reason": "四步完整，顺序与原文一致。"
+      },
+      "fact_checks": [
+        {
+          "fact": "注册账号",
+          "coverage": "covered"
+        },
+        {
+          "fact": "创建应用",
+          "coverage": "covered"
+        },
+        {
+          "fact": "获取 API Key",
+          "coverage": "covered"
+        },
+        {
+          "fact": "调用接口",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "query": "没完成企业实名能建生产应用吗？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：不能。企业实名认证通过后才能创建生产应用。\n\n**建议步骤**：\n1. 根据《API 接入指南》第一步，实名通过是创建生产应用的前提条件；\n2. 第二步明确指出创建应用需在实名通过后的控制台中进行；\n3. 未实名的企业账号仅能进行注册，无法进入应用管理页面创建生产应用。",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "API 接入指南",
+          "section": "第一步：注册与实名",
+          "version": "v1",
+          "score": 0.284
+        },
+        {
+          "index": 2,
+          "doc_title": "API 接入指南",
+          "section": "接入流程概述",
+          "version": "v1",
+          "score": 0.185
+        },
+        {
+          "index": 3,
+          "doc_title": "API 接入指南",
+          "section": "第二步：创建应用",
+          "version": "v1",
+          "score": 0.156
+        },
+        {
+          "index": 4,
+          "doc_title": "数据质量说明",
+          "section": "数据来源与更新",
+          "version": "v1",
+          "score": 0.144
+        },
+        {
+          "index": 5,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.131
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q02",
+        "pass": false,
+        "reason": "正确说明生产应用需实名；没有覆盖标注中的正式 Key 前提，且声称未实名无法进入应用管理页面，原文只限制创建生产应用，没有页面访问限制依据。",
+        "missing_fact_indices": [
+          0
+        ]
+      },
+      "fact_checks": [
+        {
+          "fact": "实名通过后才能创建生产应用和获取正式 API Key",
+          "coverage": "partial_or_missing"
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "query": "多个业务线怎样隔离应用和 Key？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：为每个业务线单独创建一个应用，每个应用拥有独立的 API Key 与权限配置，从而实现隔离。\n\n**建议步骤**：\n1. 进入控制台「应用管理」页面\n2. 为每个业务线分别创建独立的应用\n3. 在创建时选择该业务线所需的 API 产品\n4. 每个应用生成并使用各自的 API Key 和 Secret Key\n5. 通过应用级权限配置，限制各应用仅能访问对应业务所需的接口和数据",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "API 接入指南",
+          "section": "第二步：创建应用",
+          "version": "v1",
+          "score": 0.192
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "能帮我重置 Key / 升级套餐 / 退款吗？",
+          "version": "v1",
+          "score": 0.132
+        },
+        {
+          "index": 3,
+          "doc_title": "API 接入指南",
+          "section": "第三步：获取 API Key",
+          "version": "v1",
+          "score": 0.123
+        },
+        {
+          "index": 4,
+          "doc_title": "API 接入指南",
+          "section": "接入流程概述",
+          "version": "v1",
+          "score": 0.123
+        },
+        {
+          "index": 5,
+          "doc_title": "API 接入指南",
+          "section": "第一步：注册与实名",
+          "version": "v1",
+          "score": 0.121
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q03",
+        "pass": true,
+        "reason": "分别创建应用、独立 Key 与权限配置均覆盖，业务线隔离建议符合原文。"
+      },
+      "fact_checks": [
+        {
+          "fact": "一个企业可创建多个应用",
+          "coverage": "covered"
+        },
+        {
+          "fact": "每个应用拥有独立的 API Key 与权限配置",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "query": "Secret 丢了，能再查看吗？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：不能再次查看，Secret Key 仅在创建时展示一次，遗失需重新生成。\n\n**建议步骤**：\n1. 登录 API 平台进入对应应用的详情页\n2. 找到 'API Key 管理' 或类似入口\n3. 点击 '重新生成 Secret Key'（将使旧 Secret 立即失效）\n4. 重新生成后务必立即保存新 Secret Key",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "API 接入指南",
+          "section": "第三步：获取 API Key",
+          "version": "v1",
+          "score": 0.17
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "如何生成请求签名？",
+          "version": "v1",
+          "score": 0.152
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "接口返回 401 怎么办？",
+          "version": "v1",
+          "score": 0.15
+        },
+        {
+          "index": 4,
+          "doc_title": "常见问题 FAQ",
+          "section": "能帮我重置 Key / 升级套餐 / 退款吗？",
+          "version": "v1",
+          "score": 0.119
+        },
+        {
+          "index": 5,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.093
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q04",
+        "pass": false,
+        "reason": "仅展示一次及遗失重新生成均答对；补充了具体按钮和旧 Secret 立即失效规则，原文没有这些依据。"
+      },
+      "fact_checks": [
+        {
+          "fact": "Secret Key 仅在创建时展示一次",
+          "coverage": "covered"
+        },
+        {
+          "fact": "遗失需重新生成",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "query": "接口用什么协议和方法，带哪些请求头？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：接口使用 HTTPS 协议、POST 方法；必须携带三个请求头：X-Api-Key（API Key）、X-Timestamp（秒级时间戳）、X-Sign（按规则计算的签名）。\n\n**建议步骤**：\n1. 确认使用 HTTPS 协议发起 POST 请求\n2. 在请求头中设置 X-Api-Key 为你的有效 API Key\n3. 在请求头中设置 X-Timestamp 为当前秒级时间戳（如 1717023456）\n4. 按《鉴权与签名》文档要求计算并设置 X-Sign 签名",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "API 接入指南",
+          "section": "第四步：调用接口",
+          "version": "v1",
+          "score": 0.169
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "接口返回 401 怎么办？",
+          "version": "v1",
+          "score": 0.139
+        },
+        {
+          "index": 3,
+          "doc_title": "API 接入指南",
+          "section": "接入流程概述",
+          "version": "v1",
+          "score": 0.138
+        },
+        {
+          "index": 4,
+          "doc_title": "常见问题 FAQ",
+          "section": "接口返回的数据和我预期不一致？",
+          "version": "v1",
+          "score": 0.131
+        },
+        {
+          "index": 5,
+          "doc_title": "Webhook 回调",
+          "section": "回调机制",
+          "version": "v1",
+          "score": 0.13
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q05",
+        "pass": true,
+        "reason": "HTTPS POST 及三个请求头全部正确；示例时间戳明确作为例子。"
+      },
+      "fact_checks": [
+        {
+          "fact": "HTTPS POST",
+          "coverage": "covered"
+        },
+        {
+          "fact": "X-Api-Key",
+          "coverage": "covered"
+        },
+        {
+          "fact": "X-Timestamp",
+          "coverage": "covered"
+        },
+        {
+          "fact": "X-Sign",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "query": "调用前需要检查哪些权限和额度？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：调用前需检查：应用是否已开通目标API产品、API Key是否有效且未过期、服务器出口IP是否在白名单中（如开启白名单）、当前套餐是否有足够调用量与余额。\n\n**建议步骤**：\n1. 确认应用已在控制台开通所需API产品，否则返回PRODUCT_NOT_ENABLED\n2. 验证API Key状态，过期将返回AUTH_KEY_EXPIRED\n3. 检查服务器出口IP是否已添加至平台白名单，未添加且白名单启用时返回IP_NOT_ALLOWED\n4. 登录控制台「用量统计」页面，或联系技术支持助手，确认剩余调用量、QPS上限及账户余额充足",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "API 接入指南",
+          "section": "调用前检查清单",
+          "version": "v1",
+          "score": 0.199
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "还剩多少调用量？当前 QPS 是多少？",
+          "version": "v1",
+          "score": 0.157
+        },
+        {
+          "index": 3,
+          "doc_title": "套餐与计费规则",
+          "section": "调用量与余量查询",
+          "version": "v1",
+          "score": 0.151
+        },
+        {
+          "index": 4,
+          "doc_title": "常见问题 FAQ",
+          "section": "突然出现很多 429 是不是平台挂了？",
+          "version": "v1",
+          "score": 0.142
+        },
+        {
+          "index": 5,
+          "doc_title": "API 接入指南",
+          "section": "接入流程概述",
+          "version": "v1",
+          "score": 0.141
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q06",
+        "pass": false,
+        "reason": "四项检查齐全，但把账户余额也定位为可在用量统计查询；原文该页只列调用量、余量、QPS，缺少余额查询位置依据。"
+      },
+      "fact_checks": [
+        {
+          "fact": "应用开通目标产品",
+          "coverage": "covered"
+        },
+        {
+          "fact": "Key 有效且未过期",
+          "coverage": "covered"
+        },
+        {
+          "fact": "开启白名单时出口 IP 已加入",
+          "coverage": "covered"
+        },
+        {
+          "fact": "配额与余额足够",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "query": "客户端超时和失败重试有什么建议？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：客户端请求超时应不低于5秒，并实现失败重试与指数退避；需在测试中覆盖鉴权失败、参数错误、限流等异常分支。\n\n**建议步骤**：\n1. 将HTTP客户端超时设置为至少5秒\n2. 实现失败后的自动重试，采用指数退避策略（如1s、2s、4s…）\n3. 在测试用例中模拟并验证鉴权失败（401）、参数错误（400）、限流（429）等典型异常响应的处理逻辑",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "API 接入指南",
+          "section": "环境与超时建议",
+          "version": "v1",
+          "score": 0.806
+        },
+        {
+          "index": 2,
+          "doc_title": "Webhook 回调",
+          "section": "回调重试策略",
+          "version": "v1",
+          "score": 0.181
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "突然出现很多 429 是不是平台挂了？",
+          "version": "v1",
+          "score": 0.168
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调成功的判定",
+          "version": "v1",
+          "score": 0.158
+        },
+        {
+          "index": 5,
+          "doc_title": "Webhook 回调",
+          "section": "回调收不到的排查",
+          "version": "v1",
+          "score": 0.151
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q07",
+        "pass": true,
+        "reason": "不低于5秒、失败重试和指数退避齐全；1s/2s/4s作为客户端策略示例，不冒充平台固定规则。"
+      },
+      "fact_checks": [
+        {
+          "fact": "超时不低于 5 秒",
+          "coverage": "covered"
+        },
+        {
+          "fact": "失败重试与指数退避",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "query": "异步批量核验完成后如何推送结果？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：通过 Webhook 回调方式推送结果：平台在异步批量核验完成后，以 HTTPS POST 向客户预先配置的回调地址发送 JSON 格式结果，包含 event_id、业务结果和签名。\n\n**建议步骤**：\n1. 确保已按《API 接入指南》完成注册账号、创建应用、获取 API Key 并配置合法的 HTTPS 回调地址\n2. 客户服务端需能接收 POST 请求，并正确解析 JSON body 中的 event_id、业务结果及签名字段\n3. 服务端收到回调后必须立即返回 HTTP 200 状态码，否则平台将视为投递失败（WEBHOOK_DELIVERY_FAILED）",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "Webhook 回调",
+          "section": "回调机制",
+          "version": "v1",
+          "score": 0.563
+        },
+        {
+          "index": 2,
+          "doc_title": "数据质量说明",
+          "section": "数据来源与更新",
+          "version": "v1",
+          "score": 0.128
+        },
+        {
+          "index": 3,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.125
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调成功的判定",
+          "version": "v1",
+          "score": 0.114
+        },
+        {
+          "index": 5,
+          "doc_title": "API 接入指南",
+          "section": "接入流程概述",
+          "version": "v1",
+          "score": 0.106
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q08",
+        "pass": true,
+        "reason": "异步完成后Webhook HTTPS POST、JSON及event_id/业务结果/签名齐全。"
+      },
+      "fact_checks": [
+        {
+          "fact": "Webhook HTTPS POST",
+          "coverage": "covered"
+        },
+        {
+          "fact": "JSON body",
+          "coverage": "covered"
+        },
+        {
+          "fact": "event_id、业务结果与签名",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q09",
+      "query": "接收回调的 URL 要满足哪些条件？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：{\"conclusion\":\"回调 URL 必须公网可访问、支持 HTTPS，并能在 5 秒内返回 HTTP 200 响应。\", \"steps\":[\"在控制台「应用管理 - 回调配置」中完成配置并启用\",\"确保该地址可通过外网访问（如使用 curl 从公网测试）\",\"确保服务未被防火墙或云安全组拦截\",\"确保后端服务在收到 POST 请求后 5 秒内返回 HTTP 200 状态码，不返回其他状态码（如 500、404）或超时\"]]",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "Webhook 回调",
+          "section": "回调地址配置",
+          "version": "v1",
+          "score": 0.625
+        },
+        {
+          "index": 2,
+          "doc_title": "Webhook 回调",
+          "section": "回调成功的判定",
+          "version": "v1",
+          "score": 0.205
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "Webhook 一直收不到回调？",
+          "version": "v1",
+          "score": 0.172
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调收不到的排查",
+          "version": "v1",
+          "score": 0.169
+        },
+        {
+          "index": 5,
+          "doc_title": "Webhook 回调",
+          "section": "回调机制",
+          "version": "v1",
+          "score": 0.168
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q09",
+        "pass": true,
+        "reason": "公网、HTTPS、5秒内HTTP200齐全；答案含未成功解析的JSON文本，单独记录格式缺陷，不改变事实评分。",
+        "format_issue": true
+      },
+      "fact_checks": [
+        {
+          "fact": "公网可访问",
+          "coverage": "covered"
+        },
+        {
+          "fact": "支持 HTTPS",
+          "coverage": "covered"
+        },
+        {
+          "fact": "5 秒内返回 HTTP 200",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "query": "回调超时或服务返回 500 会怎样？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：平台将该次回调视为投递失败（WEBHOOK_DELIVERY_FAILED），并记录在投递记录中；不会重试，需客户自行排查服务处理逻辑或响应超时问题。\n\n**建议步骤**：\n1. 确认客户服务端是否在5秒内返回HTTP 200（超时即失败）\n2. 检查服务日志，定位返回500的具体原因（如异常、空指针、依赖不可用等）\n3. 验证回调地址公网可达性及HTTPS支持情况\n4. 查看平台投递记录，确认失败类型为'客户返回500'或'超时'\n5. 确保业务逻辑健壮，避免因内部错误导致500或响应延迟",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "Webhook 回调",
+          "section": "回调收不到的排查",
+          "version": "v1",
+          "score": 0.312
+        },
+        {
+          "index": 2,
+          "doc_title": "Webhook 回调",
+          "section": "回调成功的判定",
+          "version": "v1",
+          "score": 0.191
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "Webhook 一直收不到回调？",
+          "version": "v1",
+          "score": 0.172
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调地址配置",
+          "version": "v1",
+          "score": 0.159
+        },
+        {
+          "index": 5,
+          "doc_title": "Webhook 回调",
+          "section": "回调机制",
+          "version": "v1",
+          "score": 0.152
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q10",
+        "pass": false,
+        "reason": "投递失败错误码和HTTP200判定正确，但声称不会重试，与同一知识库的回调重试策略明确冲突。"
+      },
+      "fact_checks": [
+        {
+          "fact": "投递失败",
+          "coverage": "covered"
+        },
+        {
+          "fact": "WEBHOOK_DELIVERY_FAILED",
+          "coverage": "covered"
+        },
+        {
+          "fact": "必须返回 HTTP 200",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q11",
+      "query": "回调失败重试几次，间隔是多少？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：最多重试 6 次，间隔依次约为 1 分钟、5 分钟、30 分钟、2 小时、6 小时、12 小时。\n\n**建议步骤**：\n1. 确认回调地址公网可达且服务端能在 5 秒内返回 HTTP 200\n2. 若未返回 200 或超时/不可达，平台将触发重试\n3. 重试采用指数退避策略，共 6 次\n4. 超过 6 次后停止自动重试，可在控制台手动补发",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "Webhook 回调",
+          "section": "回调重试策略",
+          "version": "v1",
+          "score": 0.84
+        },
+        {
+          "index": 2,
+          "doc_title": "Webhook 回调",
+          "section": "回调重复",
+          "version": "v1",
+          "score": 0.18
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "Webhook 一直收不到回调？",
+          "version": "v1",
+          "score": 0.173
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调成功的判定",
+          "version": "v1",
+          "score": 0.167
+        },
+        {
+          "index": 5,
+          "doc_title": "API 接入指南",
+          "section": "环境与超时建议",
+          "version": "v1",
+          "score": 0.166
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q11",
+        "pass": true,
+        "reason": "6次、全部6个间隔、停止自动重试和控制台手动补发完整。"
+      },
+      "fact_checks": [
+        {
+          "fact": "最多重试 6 次",
+          "coverage": "covered"
+        },
+        {
+          "fact": "1 分钟、5 分钟、30 分钟、2 小时、6 小时、12 小时",
+          "coverage": "covered"
+        },
+        {
+          "fact": "超过最大次数停止，可手动补发",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q12",
+      "query": "Webhook 收不到，应该按什么顺序查？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：按以下顺序排查：1. 确认回调地址已配置且启用；2. 确认回调地址公网可达、未被拦截；3. 查看投递记录，区分是平台未发送、客户未接收、客户返回错误还是验签失败；4. 若投递记录显示已发送但失败，检查是否在5秒内返回200、验签是否使用原始body和正确密钥。\n\n**建议步骤**：\n1. 确认回调地址在控制台已正确配置且回调功能已启用\n2. 确认回调地址公网可达（如用curl从外网测试），且未被防火墙或安全组拦截\n3. 查看平台侧投递记录，判断失败类型：平台未发送 / 客户未接收 / 客户返回非2xx或超时 / 验签失败（WEBHOOK_SIGN_INVALID）\n4. 若投递记录显示已发送但失败，检查客户服务端是否在5秒内返回HTTP 200，并确认验签使用的是原始请求体和正确的回调密钥",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "常见问题 FAQ",
+          "section": "Webhook 一直收不到回调？",
+          "version": "v1",
+          "score": 0.474
+        },
+        {
+          "index": 2,
+          "doc_title": "Webhook 回调",
+          "section": "回调收不到的排查",
+          "version": "v1",
+          "score": 0.186
+        },
+        {
+          "index": 3,
+          "doc_title": "Webhook 回调",
+          "section": "回调成功的判定",
+          "version": "v1",
+          "score": 0.175
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调验签（WEBHOOK_SIGN_INVALID）",
+          "version": "v1",
+          "score": 0.151
+        },
+        {
+          "index": 5,
+          "doc_title": "Webhook 回调",
+          "section": "回调机制",
+          "version": "v1",
+          "score": 0.146
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q12",
+        "pass": true,
+        "reason": "配置启用、公网可达、投递记录和四种失败情况完整。"
+      },
+      "fact_checks": [
+        {
+          "fact": "配置且启用",
+          "coverage": "covered"
+        },
+        {
+          "fact": "公网可达且未被拦截",
+          "coverage": "covered"
+        },
+        {
+          "fact": "查看投递记录",
+          "coverage": "covered"
+        },
+        {
+          "fact": "区分未发送、未接收、返回错误、验签失败",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q13",
+      "query": "回调验签总失败，body 能先转 JSON 再拼接吗？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：不可以。必须使用原始请求体（raw body）验签，不能先反序列化为 JSON 对象再重新拼接，否则字节不一致会导致验签失败（WEBHOOK_SIGN_INVALID）。\n\n**建议步骤**：\n1. 从 HTTP 请求中直接读取原始字节流或字符串形式的 body，不经过 JSON 解析或任何修改\n2. 使用该原始 body 和控制台配置的回调密钥，按《Webhook 回调》文档中的签名算法计算签名\n3. 对比请求头或 body 中携带的签名字段（如 X-Sign 或 sign）是否匹配\n4. 避免对 body 做空格整理、字段重排序、null 值处理等任何可能改变字节序列的操作",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "Webhook 回调",
+          "section": "回调验签（WEBHOOK_SIGN_INVALID）",
+          "version": "v1",
+          "score": 0.724
+        },
+        {
+          "index": 2,
+          "doc_title": "Webhook 回调",
+          "section": "回调机制",
+          "version": "v1",
+          "score": 0.186
+        },
+        {
+          "index": 3,
+          "doc_title": "Webhook 回调",
+          "section": "回调收不到的排查",
+          "version": "v1",
+          "score": 0.173
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调重试策略",
+          "version": "v1",
+          "score": 0.154
+        },
+        {
+          "index": 5,
+          "doc_title": "API 接入指南",
+          "section": "第四步：调用接口",
+          "version": "v1",
+          "score": 0.154
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q13",
+        "pass": false,
+        "reason": "原始body、正确密钥、重新序列化改变字节均覆盖；又给出回调可在请求头X-Sign中取签名的流程，原文只写回调body携带签名，混入API调用请求头，缺少依据。"
+      },
+      "fact_checks": [
+        {
+          "fact": "使用正确回调密钥",
+          "coverage": "covered"
+        },
+        {
+          "fact": "原始请求体验签",
+          "coverage": "covered"
+        },
+        {
+          "fact": "重新序列化可能导致字节不一致",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q14",
+      "query": "同一回调来了两次，怎样防止重复处理？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：使用 event_id 做幂等去重，确保同一 event_id 的事件只处理一次。\n\n**建议步骤**：\n1. 在接收 Webhook 回调时，提取请求 body 中的 event_id 字段\n2. 在业务系统中维护已处理 event_id 的记录（如 Redis 或数据库），检查当前 event_id 是否已存在\n3. 若 event_id 已存在，则直接返回 HTTP 200 并跳过后续业务逻辑；若不存在，则执行业务处理并记录该 event_id\n4. 注意：必须始终返回 HTTP 200，否则平台会因判定为投递失败而触发重试，加剧重复风险",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "Webhook 回调",
+          "section": "回调重复",
+          "version": "v1",
+          "score": 0.5
+        },
+        {
+          "index": 2,
+          "doc_title": "Webhook 回调",
+          "section": "回调重试策略",
+          "version": "v1",
+          "score": 0.185
+        },
+        {
+          "index": 3,
+          "doc_title": "Webhook 回调",
+          "section": "回调机制",
+          "version": "v1",
+          "score": 0.167
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调地址配置",
+          "version": "v1",
+          "score": 0.165
+        },
+        {
+          "index": 5,
+          "doc_title": "Webhook 回调",
+          "section": "回调成功的判定",
+          "version": "v1",
+          "score": 0.161
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q14",
+        "pass": true,
+        "reason": "event_id幂等去重和一次处理齐全；Redis/数据库是客户侧可选实现建议。"
+      },
+      "fact_checks": [
+        {
+          "fact": "event_id 幂等去重",
+          "coverage": "covered"
+        },
+        {
+          "fact": "同一事件只处理一次",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q15",
+      "query": "基础版和专业版 QPS、月配额各是多少？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：基础版 QPS 为 20，月配额为 100,000 次；专业版 QPS 为 50，月配额为 500,000 次。\n\n**建议步骤**：\n1. 根据《套餐与计费规则》- 套餐档位表格，基础版对应 QPS=20、月配额=100,000；专业版对应 QPS=50、月配额=500,000。",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "套餐与计费规则",
+          "section": "套餐档位",
+          "version": "v1",
+          "score": 0.618
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "还剩多少调用量？当前 QPS 是多少？",
+          "version": "v1",
+          "score": 0.187
+        },
+        {
+          "index": 3,
+          "doc_title": "套餐与计费规则",
+          "section": "调用量与余量查询",
+          "version": "v1",
+          "score": 0.161
+        },
+        {
+          "index": 4,
+          "doc_title": "套餐与计费规则",
+          "section": "计费方式",
+          "version": "v1",
+          "score": 0.153
+        },
+        {
+          "index": 5,
+          "doc_title": "常见问题 FAQ",
+          "section": "突然出现很多 429 是不是平台挂了？",
+          "version": "v1",
+          "score": 0.135
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q15",
+        "pass": true,
+        "reason": "基础版20/100000及专业版50/500000全部正确。"
+      },
+      "fact_checks": [
+        {
+          "fact": "基础版 20 QPS、100000 月配额",
+          "coverage": "covered"
+        },
+        {
+          "fact": "专业版 50 QPS、500000 月配额",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q16",
+      "query": "月调用量超额时，账单怎么算？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：月调用量超额时，账单金额 = 月配额 × 单价 + (本月调用量 − 月配额) × 超额单价。\n\n**建议步骤**：\n1. 1. 计算基础费用：取本月调用量与月配额的较小值，乘以单价；\n2. 2. 计算超额费用：若本月调用量超过月配额，则超出部分乘以超额单价，否则为0；\n3. 3. 账单总金额 = 基础费用 + 超额费用。",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "套餐与计费规则",
+          "section": "计费方式",
+          "version": "v1",
+          "score": 0.565
+        },
+        {
+          "index": 2,
+          "doc_title": "套餐与计费规则",
+          "section": "账单为什么会上涨",
+          "version": "v1",
+          "score": 0.471
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "这个月费用为什么变高了？",
+          "version": "v1",
+          "score": 0.377
+        },
+        {
+          "index": 4,
+          "doc_title": "套餐与计费规则",
+          "section": "调用量与余量查询",
+          "version": "v1",
+          "score": 0.217
+        },
+        {
+          "index": 5,
+          "doc_title": "常见问题 FAQ",
+          "section": "还剩多少调用量？当前 QPS 是多少？",
+          "version": "v1",
+          "score": 0.176
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q16",
+        "pass": true,
+        "reason": "基础/超额公式及总和齐全；超额场景的结论公式正确。"
+      },
+      "fact_checks": [
+        {
+          "fact": "基础费用=min(调用量,配额)×单价",
+          "coverage": "covered"
+        },
+        {
+          "fact": "超额费用=max(0,调用量−配额)×超额单价",
+          "coverage": "covered"
+        },
+        {
+          "fact": "账单为两者之和",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q17",
+      "query": "本月账单涨了，先从哪些方向排查？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：从调用量增长、是否产生超额、套餐是否变更三个方向排查。\n\n**建议步骤**：\n1. 登录控制台「用量统计」查看本月调用量、剩余配额及QPS上限，对比上月数据；\n2. 查看账单明细，区分基础费用与超额费用占比；\n3. 确认近期是否主动升级套餐或平台是否执行了套餐单价调整。",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "套餐与计费规则",
+          "section": "账单为什么会上涨",
+          "version": "v1",
+          "score": 0.779
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "这个月费用为什么变高了？",
+          "version": "v1",
+          "score": 0.253
+        },
+        {
+          "index": 3,
+          "doc_title": "套餐与计费规则",
+          "section": "调用量与余量查询",
+          "version": "v1",
+          "score": 0.175
+        },
+        {
+          "index": 4,
+          "doc_title": "套餐与计费规则",
+          "section": "计费方式",
+          "version": "v1",
+          "score": 0.166
+        },
+        {
+          "index": 5,
+          "doc_title": "套餐与计费规则",
+          "section": "发票",
+          "version": "v1",
+          "score": 0.162
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q17",
+        "pass": true,
+        "reason": "调用量增长、超额、套餐变更及账单构成对比齐全。"
+      },
+      "fact_checks": [
+        {
+          "fact": "调用量增长",
+          "coverage": "covered"
+        },
+        {
+          "fact": "产生超额",
+          "coverage": "covered"
+        },
+        {
+          "fact": "套餐变更",
+          "coverage": "covered"
+        },
+        {
+          "fact": "对比月调用量与基础/超额构成",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q18",
+      "query": "我在哪查看剩余配额、调用量和 QPS 上限？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：您可在控制台「用量统计」页面查看剩余配额、当月调用量和 QPS 上限；也可直接询问技术支持助手查询这些信息。\n\n**建议步骤**：\n1. 登录 API 平台控制台\n2. 进入「用量统计」页面\n3. 查看当前套餐对应的剩余配额、当月已用调用量、QPS 上限等实时数据\n4. 如需进一步协助，可继续向技术支持助手提供应用标识，以便查询具体用量详情",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "套餐与计费规则",
+          "section": "调用量与余量查询",
+          "version": "v1",
+          "score": 0.811
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "还剩多少调用量？当前 QPS 是多少？",
+          "version": "v1",
+          "score": 0.734
+        },
+        {
+          "index": 3,
+          "doc_title": "套餐与计费规则",
+          "section": "套餐档位",
+          "version": "v1",
+          "score": 0.179
+        },
+        {
+          "index": 4,
+          "doc_title": "常见问题 FAQ",
+          "section": "突然出现很多 429 是不是平台挂了？",
+          "version": "v1",
+          "score": 0.164
+        },
+        {
+          "index": 5,
+          "doc_title": "API 接入指南",
+          "section": "调用前检查清单",
+          "version": "v1",
+          "score": 0.146
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q18",
+        "pass": true,
+        "reason": "用量统计和技术支持两种途径齐全，补充应用标识为查询建议。"
+      },
+      "fact_checks": [
+        {
+          "fact": "控制台用量统计",
+          "coverage": "covered"
+        },
+        {
+          "fact": "也可询问技术支持助手",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q19",
+      "query": "发票从哪里申请，助手能直接退款吗？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：发票可在控制台「财务 - 发票管理」申请；助手不能直接退款，需转交商务团队处理。\n\n**建议步骤**：\n1. 登录控制台，进入「财务 - 发票管理」页面提交发票申请\n2. 退款属于商务操作，技术支持助手无法直接执行，将为你转交商务团队处理",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "套餐与计费规则",
+          "section": "发票",
+          "version": "v1",
+          "score": 0.496
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "怎么申请发票？",
+          "version": "v1",
+          "score": 0.306
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "能帮我重置 Key / 升级套餐 / 退款吗？",
+          "version": "v1",
+          "score": 0.169
+        },
+        {
+          "index": 4,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.065
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q19",
+        "pass": false,
+        "reason": "发票入口及退款商务转交正确，但遗漏冻结必答事实中的结算后申请这一时机条件。",
+        "missing_fact_indices": [
+          0
+        ]
+      },
+      "fact_checks": [
+        {
+          "fact": "结算后财务-发票管理申请",
+          "coverage": "partial_or_missing"
+        },
+        {
+          "fact": "退款由商务团队处理",
+          "coverage": "covered"
+        },
+        {
+          "fact": "助手转人工",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q20",
+      "query": "企业工商和实名数据更新有何不同，哪里看时间？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：企业工商信息通常T+1更新，实名核验为实时比对；时间可通过返回结果中的`data_time`字段查看。\n\n**建议步骤**：\n1. 确认接口返回结果中是否存在`data_time`字段，该字段标识数据更新时间\n2. 对于企业工商类接口，数据一般滞后1天（T+1）；对于实名核验类接口，为实时比对，`data_time`应接近请求时刻\n3. 若发现`data_time`与预期不符，可结合《数据质量说明》提交工单核查",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "数据质量说明",
+          "section": "数据来源与更新",
+          "version": "v1",
+          "score": 0.605
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "接口返回的数据和我预期不一致？",
+          "version": "v1",
+          "score": 0.161
+        },
+        {
+          "index": 3,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.146
+        },
+        {
+          "index": 4,
+          "doc_title": "数据质量说明",
+          "section": "数据不一致（DATA_INCONSISTENT）",
+          "version": "v1",
+          "score": 0.143
+        },
+        {
+          "index": 5,
+          "doc_title": "API 接入指南",
+          "section": "第一步：注册与实名",
+          "version": "v1",
+          "score": 0.114
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q20",
+        "pass": true,
+        "reason": "工商通常T+1、实名实时比对和data_time齐全。"
+      },
+      "fact_checks": [
+        {
+          "fact": "企业工商通常 T+1",
+          "coverage": "covered"
+        },
+        {
+          "fact": "实名实时比对",
+          "coverage": "covered"
+        },
+        {
+          "fact": "data_time 标识更新时间",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q21",
+      "query": "DATA_EMPTY 的原因和排查顺序？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：DATA_EMPTY 的原因包括：1. 参数不匹配；2. 数据未覆盖；3. 权限或产品范围不足。排查顺序为：先核对查询参数，再确认数据覆盖范围；若确认应有数据却返回空，需提交数据质量工单并附 request_id 与期望结果。\n\n**建议步骤**：\n1. 核对查询关键字段（如企业名称、证件号）的拼写和格式是否正确\n2. 确认目标数据是否在当前产品覆盖范围内（如地区、主体类型、成立时间等）\n3. 检查所开通的产品权限是否包含该类数据接口\n4. 若以上均无误但预期数据仍缺失，提交数据质量工单，并提供 request_id 和期望结果",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "数据质量说明",
+          "section": "返回为空（DATA_EMPTY）",
+          "version": "v1",
+          "score": 0.819
+        },
+        {
+          "index": 2,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.148
+        },
+        {
+          "index": 3,
+          "doc_title": "数据质量说明",
+          "section": "数据不一致（DATA_INCONSISTENT）",
+          "version": "v1",
+          "score": 0.136
+        },
+        {
+          "index": 4,
+          "doc_title": "常见问题 FAQ",
+          "section": "接口返回的数据和我预期不一致？",
+          "version": "v1",
+          "score": 0.129
+        },
+        {
+          "index": 5,
+          "doc_title": "数据质量说明",
+          "section": "数据来源与更新",
+          "version": "v1",
+          "score": 0.113
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q21",
+        "pass": true,
+        "reason": "三个原因、参数到覆盖的排查顺序、工单及request_id和期望结果齐全。"
+      },
+      "fact_checks": [
+        {
+          "fact": "参数不匹配",
+          "coverage": "covered"
+        },
+        {
+          "fact": "数据未覆盖",
+          "coverage": "covered"
+        },
+        {
+          "fact": "权限或产品范围",
+          "coverage": "covered"
+        },
+        {
+          "fact": "先核对参数再确认覆盖",
+          "coverage": "covered"
+        },
+        {
+          "fact": "工单附 request_id 与期望结果",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q22",
+      "query": "返回数据和官网不同，该准备什么材料？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：需准备：1）查询参数；2）平台返回的完整响应（含data_time）；3）官网截图或链接等期望值来源；4）request_id。然后提交数据质量工单。\n\n**建议步骤**：\n1. 查看返回结果中的 `data_time` 字段，确认是否因更新延迟导致差异\n2. 整理对比样例：包括请求参数、平台返回内容、官网显示内容及来源链接/截图\n3. 确保提供本次请求的 `request_id`\n4. 通过工单系统提交上述材料，由数据团队核查",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "数据质量说明",
+          "section": "数据不一致（DATA_INCONSISTENT）",
+          "version": "v1",
+          "score": 0.392
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "接口返回的数据和我预期不一致？",
+          "version": "v1",
+          "score": 0.177
+        },
+        {
+          "index": 3,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.157
+        },
+        {
+          "index": 4,
+          "doc_title": "数据质量说明",
+          "section": "返回为空（DATA_EMPTY）",
+          "version": "v1",
+          "score": 0.157
+        },
+        {
+          "index": 5,
+          "doc_title": "数据质量说明",
+          "section": "数据来源与更新",
+          "version": "v1",
+          "score": 0.149
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q22",
+        "pass": true,
+        "reason": "data_time时间差、查询参数/平台返回/期望值/来源及工单完整。"
+      },
+      "fact_checks": [
+        {
+          "fact": "查看 data_time 排查时间差",
+          "coverage": "covered"
+        },
+        {
+          "fact": "查询参数、平台返回、期望值、来源",
+          "coverage": "covered"
+        },
+        {
+          "fact": "提交数据质量工单",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q23",
+      "query": "平台保证返回数据绝对准确吗？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：不保证。平台不对数据的绝对准确性做承诺，数据以来源方与更新时间为准。\n\n**建议步骤**：\n1. 查看返回结果中的 `data_time` 字段确认数据时效性\n2. 若发现数据与权威来源不一致，需通过工单提交可复现的对比样例（含查询参数、平台返回值、期望值及来源）\n3. 数据团队将基于样例进行核查",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.444
+        },
+        {
+          "index": 2,
+          "doc_title": "数据质量说明",
+          "section": "数据来源与更新",
+          "version": "v1",
+          "score": 0.194
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "接口返回的数据和我预期不一致？",
+          "version": "v1",
+          "score": 0.175
+        },
+        {
+          "index": 4,
+          "doc_title": "数据质量说明",
+          "section": "数据不一致（DATA_INCONSISTENT）",
+          "version": "v1",
+          "score": 0.174
+        },
+        {
+          "index": 5,
+          "doc_title": "Webhook 回调",
+          "section": "回调成功的判定",
+          "version": "v1",
+          "score": 0.152
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q23",
+        "pass": true,
+        "reason": "不绝对保证准确、来源与时间边界、可复现工单样例完整。"
+      },
+      "fact_checks": [
+        {
+          "fact": "不承诺绝对准确",
+          "coverage": "covered"
+        },
+        {
+          "fact": "以来源方与更新时间为准",
+          "coverage": "covered"
+        },
+        {
+          "fact": "争议提交可复现样例工单",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q24",
+      "query": "回调重试造成重复扣业务动作怎么办？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：使用 event_id 做幂等去重，确保同一事件只处理一次业务动作。\n\n**建议步骤**：\n1. 收到回调时，先提取请求 body 中的 event_id 字段\n2. 检查该 event_id 是否已在本地数据库或缓存中存在（即是否已处理过）\n3. 若已存在，直接返回 HTTP 200，不执行后续业务逻辑；若不存在，执行业务动作并持久化记录该 event_id\n4. 注意：验签必须基于原始请求体进行，避免反序列化后再拼接导致签名验证失败，影响幂等判断前提",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "Webhook 回调",
+          "section": "回调重复",
+          "version": "v1",
+          "score": 0.294
+        },
+        {
+          "index": 2,
+          "doc_title": "Webhook 回调",
+          "section": "回调重试策略",
+          "version": "v1",
+          "score": 0.182
+        },
+        {
+          "index": 3,
+          "doc_title": "Webhook 回调",
+          "section": "回调机制",
+          "version": "v1",
+          "score": 0.158
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调地址配置",
+          "version": "v1",
+          "score": 0.146
+        },
+        {
+          "index": 5,
+          "doc_title": "Webhook 回调",
+          "section": "回调验签（WEBHOOK_SIGN_INVALID）",
+          "version": "v1",
+          "score": 0.145
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q24",
+        "pass": true,
+        "reason": "同义改写题仍正确给出event_id幂等一次处理；客户数据库/缓存建议不视为平台事实。"
+      },
+      "fact_checks": [
+        {
+          "fact": "event_id 幂等去重",
+          "coverage": "covered"
+        },
+        {
+          "fact": "同一事件只处理一次",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q25",
+      "query": "401 要怎么确认是过期还是签名错误？",
+      "answerable": true,
+      "status": "ok",
+      "answer": "**结论**：通过 request_id 查看调用日志中的错误码：AUTH_KEY_EXPIRED 表示 Key 过期，SIGN_INVALID 表示签名错误。\n\n**建议步骤**：\n1. 使用 request_id 查询该次调用的完整日志\n2. 在日志中定位错误码字段\n3. 若错误码为 AUTH_KEY_EXPIRED，则需重新生成 API Key；若为 SIGN_INVALID，则需检查参数排序、Secret 和时间戳是否正确",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "常见问题 FAQ",
+          "section": "接口返回 401 怎么办？",
+          "version": "v1",
+          "score": 0.857
+        },
+        {
+          "index": 2,
+          "doc_title": "Webhook 回调",
+          "section": "回调验签（WEBHOOK_SIGN_INVALID）",
+          "version": "v1",
+          "score": 0.15
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "突然出现很多 429 是不是平台挂了？",
+          "version": "v1",
+          "score": 0.137
+        },
+        {
+          "index": 4,
+          "doc_title": "套餐与计费规则",
+          "section": "发票",
+          "version": "v1",
+          "score": 0.126
+        },
+        {
+          "index": 5,
+          "doc_title": "常见问题 FAQ",
+          "section": "如何生成请求签名？",
+          "version": "v1",
+          "score": 0.125
+        }
+      ],
+      "evidence_hit_at_5": true,
+      "rrf_hit_at_5": true,
+      "citation_matches_gold": true,
+      "review": {
+        "id": "Q25",
+        "pass": true,
+        "reason": "request_id查日志、过期重新生成、签名检查三个要点完整。"
+      },
+      "fact_checks": [
+        {
+          "fact": "用 request_id 查日志",
+          "coverage": "covered"
+        },
+        {
+          "fact": "AUTH_KEY_EXPIRED 重新生成 Key",
+          "coverage": "covered"
+        },
+        {
+          "fact": "SIGN_INVALID 检查参数排序、Secret、时间戳",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q26",
+      "query": "新加坡数据中心的固定出口 IP 是多少？",
+      "answerable": false,
+      "status": "ok",
+      "answer": "**结论**：参考资料中未提供新加坡数据中心的固定出口 IP 信息。\n\n**建议步骤**：\n1. 请登录控制台，在「应用管理」或「安全设置」相关页面查看出口 IP 配置；\n2. 如需获取具体出口 IP，建议通过工单联系技术支持，并说明应用场景以便确认是否适用；\n3. 注意：若开启 IP 白名单，需确保该出口 IP 已添加至白名单。",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "API 接入指南",
+          "section": "调用前检查清单",
+          "version": "v1",
+          "score": 0.127
+        },
+        {
+          "index": 2,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.119
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "还剩多少调用量？当前 QPS 是多少？",
+          "version": "v1",
+          "score": 0.066
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调地址配置",
+          "version": "v1",
+          "score": 0.058
+        }
+      ],
+      "evidence_hit_at_5": null,
+      "rrf_hit_at_5": null,
+      "citation_matches_gold": null,
+      "review": {
+        "id": "Q26",
+        "pass": false,
+        "correct_refusal": false,
+        "verbal_abstention": true,
+        "reason": "明确说资料无固定出口IP，也未编造IP；但随后捏造可在应用管理/安全设置查看出口IP配置的产品流程。严格拒答判失败。"
+      },
+      "fact_checks": [
+        {
+          "fact": "明确说明资料不足，不提供未有依据的具体值",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q27",
+      "query": "Webhook 回调密钥每隔多少天强制轮换？",
+      "answerable": false,
+      "status": "ok",
+      "answer": "**结论**：参考资料中未提及 Webhook 回调密钥的轮换周期（如每隔多少天强制轮换）。\n\n**建议步骤**：\n1. 查阅所有提供的参考资料（FAQ、Webhook 回调机制、验签、重试策略、成功判定），均未出现关于密钥轮换频率、有效期或强制更新时间的要求；\n2. 密钥管理相关策略（如生成、更新、轮换）不在当前文档覆盖范围内。",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "常见问题 FAQ",
+          "section": "Webhook 一直收不到回调？",
+          "version": "v1",
+          "score": 0.168
+        },
+        {
+          "index": 2,
+          "doc_title": "Webhook 回调",
+          "section": "回调验签（WEBHOOK_SIGN_INVALID）",
+          "version": "v1",
+          "score": 0.165
+        },
+        {
+          "index": 3,
+          "doc_title": "Webhook 回调",
+          "section": "回调机制",
+          "version": "v1",
+          "score": 0.163
+        },
+        {
+          "index": 4,
+          "doc_title": "Webhook 回调",
+          "section": "回调重试策略",
+          "version": "v1",
+          "score": 0.158
+        },
+        {
+          "index": 5,
+          "doc_title": "Webhook 回调",
+          "section": "回调成功的判定",
+          "version": "v1",
+          "score": 0.148
+        }
+      ],
+      "evidence_hit_at_5": null,
+      "rrf_hit_at_5": null,
+      "citation_matches_gold": null,
+      "review": {
+        "id": "Q27",
+        "pass": true,
+        "correct_refusal": true,
+        "verbal_abstention": true,
+        "reason": "明确资料未覆盖密钥轮换周期，没有给出天数或平台规则。"
+      },
+      "fact_checks": [
+        {
+          "fact": "明确说明资料不足，不提供未有依据的具体值",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q28",
+      "query": "企业版是否保证 99.99% SLA，并如何赔偿？",
+      "answerable": false,
+      "status": "ok",
+      "answer": "**结论**：参考资料中未提及任何关于SLA（服务等级协议）或赔偿条款的内容，因此无法确认企业版是否保证99.99% SLA及相应赔偿方式。\n\n**建议步骤**：\n1. 查阅提供的全部参考资料（[1]至[5]），均未涉及SLA、可用性承诺、故障赔偿或服务保障条款；\n2. 该问题属于服务协议或商务合同范畴，需以正式签订的《服务协议》或后台商务文档为准；\n3. 建议通过工单提交此问题，由商务团队提供具有法律效力的SLA说明。",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "套餐与计费规则",
+          "section": "套餐档位",
+          "version": "v1",
+          "score": 0.147
+        },
+        {
+          "index": 2,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.097
+        },
+        {
+          "index": 3,
+          "doc_title": "常见问题 FAQ",
+          "section": "能帮我重置 Key / 升级套餐 / 退款吗？",
+          "version": "v1",
+          "score": 0.072
+        },
+        {
+          "index": 4,
+          "doc_title": "API 接入指南",
+          "section": "接入流程概述",
+          "version": "v1",
+          "score": 0.064
+        },
+        {
+          "index": 5,
+          "doc_title": "API 接入指南",
+          "section": "第一步：注册与实名",
+          "version": "v1",
+          "score": 0.062
+        }
+      ],
+      "evidence_hit_at_5": null,
+      "rrf_hit_at_5": null,
+      "citation_matches_gold": null,
+      "review": {
+        "id": "Q28",
+        "pass": true,
+        "correct_refusal": true,
+        "verbal_abstention": true,
+        "reason": "明确无法确认99.99%SLA及赔偿，指向正式合同/商务，未编造承诺。"
+      },
+      "fact_checks": [
+        {
+          "fact": "明确说明资料不足，不提供未有依据的具体值",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q29",
+      "query": "请给出 Java SDK 官方 Maven 坐标和最新版本。",
+      "answerable": false,
+      "status": "ok",
+      "answer": "**结论**：参考资料中未提供 Java SDK 的官方 Maven 坐标和最新版本信息。",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.067
+        }
+      ],
+      "evidence_hit_at_5": null,
+      "rrf_hit_at_5": null,
+      "citation_matches_gold": null,
+      "review": {
+        "id": "Q29",
+        "pass": true,
+        "correct_refusal": true,
+        "verbal_abstention": true,
+        "reason": "直接说明资料缺失，未编造SDK坐标和版本。"
+      },
+      "fact_checks": [
+        {
+          "fact": "明确说明资料不足，不提供未有依据的具体值",
+          "coverage": "covered"
+        }
+      ]
+    },
+    {
+      "id": "Q30",
+      "query": "数据质量工单承诺几小时解决？",
+      "answerable": false,
+      "status": "ok",
+      "answer": "**结论**：参考资料中未说明数据质量工单的具体解决时限。\n\n**建议步骤**：\n1. 请通过工单系统提交问题，并附上 request_id 与可复现的对比样例；\n2. 数据团队将依据问题复杂度和优先级进行核查，具体处理时长以工单系统反馈为准。",
+      "citations": [
+        {
+          "index": 1,
+          "doc_title": "数据质量说明",
+          "section": "重要说明",
+          "version": "v1",
+          "score": 0.197
+        },
+        {
+          "index": 2,
+          "doc_title": "常见问题 FAQ",
+          "section": "接口返回的数据和我预期不一致？",
+          "version": "v1",
+          "score": 0.173
+        },
+        {
+          "index": 3,
+          "doc_title": "数据质量说明",
+          "section": "数据不一致（DATA_INCONSISTENT）",
+          "version": "v1",
+          "score": 0.166
+        },
+        {
+          "index": 4,
+          "doc_title": "数据质量说明",
+          "section": "返回为空（DATA_EMPTY）",
+          "version": "v1",
+          "score": 0.138
+        },
+        {
+          "index": 5,
+          "doc_title": "Webhook 回调",
+          "section": "回调重试策略",
+          "version": "v1",
+          "score": 0.084
+        }
+      ],
+      "evidence_hit_at_5": null,
+      "rrf_hit_at_5": null,
+      "citation_matches_gold": null,
+      "review": {
+        "id": "Q30",
+        "pass": false,
+        "correct_refusal": false,
+        "verbal_abstention": true,
+        "reason": "明确资料没有解决时限，未报小时数；但新增数据团队按复杂度和优先级处理且时长以工单系统反馈为准的政策，现有资料没有依据，严格拒答判失败。"
+      },
+      "fact_checks": [
+        {
+          "fact": "明确说明资料不足，不提供未有依据的具体值",
+          "coverage": "covered"
+        }
+      ]
+    }
+  ]
+}
